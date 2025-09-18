@@ -21,7 +21,7 @@ const Pagination: React.FC<PaginationProps> = ({
     
     if (pageNumber && pageNumber >= 1 && pageNumber <= totalPages) {
       onPageChange(pageNumber);
-      setGoToPage(''); // cleaing the input after successful navigation
+      setGoToPage(''); 
     } else {
       alert(`Please enter a valid page number between 1 and ${totalPages}`);
     }

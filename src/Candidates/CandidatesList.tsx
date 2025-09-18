@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FixedSizeList } from 'react-window';
+
 import { useCandidates } from '../hooks/CandidatesHook/useCandidates';
 import type { Candidate } from '../data/CandidatesData/mockCandidates';
+
 
 const CandidatesList: React.FC = () => {
   const { 
@@ -35,7 +37,17 @@ const CandidatesList: React.FC = () => {
 
   return (
     <div className="p-4 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Candidates</h1>
+
+    
+
+      <div className="p-4 max-w-5xl mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold">Candidates</h1>
+      
+        <Link to="/candidates/kanbanview" className="px-4 py-2 bg-black-500 text-white rounded-md hover:bg-black-600">
+          Go to Kanban Board
+        </Link>
+      </div></div>
       
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
         <input

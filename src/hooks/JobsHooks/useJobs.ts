@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import * as jobLogic from './createOrUpdateJobsLogic'; 
-import { useDragAndDrop } from '../useDragAndDrop';
+import { useDragAndDrop } from './useDragAndDrop';
 
 const JOBS_PER_PAGE = 5;
 const TAG_POOL = jobLogic.getTags(); 

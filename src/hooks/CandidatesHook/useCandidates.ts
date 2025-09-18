@@ -6,9 +6,7 @@ import type { Candidate } from '../../data/CandidatesData/mockCandidates';
 export const useCandidates = () => {
   const [allCandidates, setAllCandidates] = useState<Candidate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
   const [stageFilter, setStageFilter] = useState<string | 'all'>('all');
-  
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -39,5 +37,8 @@ export const useCandidates = () => {
     setSearchTerm,
     stageFilter,
     setStageFilter,
+  
+    setAllCandidates, 
+    
   };
 };

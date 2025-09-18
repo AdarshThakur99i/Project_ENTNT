@@ -2,6 +2,7 @@ export interface Candidate {
   id: number;
   name: string;
   email: string;
+   order?: number;
   currentStage: 'Applied' | 'Screening' | 'Interview' | 'Hired' | 'Rejected';
   stageHistory: { stage: string; timestamp: string }[];
 }
