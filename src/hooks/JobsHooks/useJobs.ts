@@ -56,7 +56,7 @@ export const useJobs = () => {
     try {
       await jobLogic.saveJobOrder(reorderedJobs);
     } catch (error) {
-      alert("Error: Could not save. Reverting changes.");
+      alert("Error: Could not save. Reverting changes(intentional error to test rollbacks).");
       setJobs(originalJobs);
     }
   };
@@ -83,7 +83,7 @@ export const useJobs = () => {
     try {
       await jobLogic.updateJobStatus(id, newStatus);
     } catch (error) {
-      alert("Error: Could not update job status. Reverting.");
+      alert("Error: Could not update job status. Reverting(intentional error to test rollbacks).");
       setJobs(originalJobs);
     }
   };

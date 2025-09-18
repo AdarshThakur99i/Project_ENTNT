@@ -83,7 +83,7 @@ const JobItem: React.FC<JobItemProps> = ({
     
         <div 
           className={`flex items-center gap-2 mt-2 md:mt-0 flex-shrink-0 transition-opacity duration-500 ${
-            job.status === 'archived' ? 'opacity-50 pointer-events-none' : 'opacity-100'
+            job.status === 'archived' ? 'opacity-50' : 'opacity-100'
           }`}
         >
           <button
