@@ -13,8 +13,16 @@ let ALL_JOBS = Array.from({ length: 23 }, (_, i) => ({
 }));
 
 
-// --- DATA LOGIC FUNCTIONS ---
-
+// logic functions
+export const getJobById = async (id: number) => {
+  console.log(`LOGIC: Fetching job with ID: ${id}`);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const job = ALL_JOBS.find(j => j.id === id);
+      resolve(job || null);
+    }, 300);
+  });
+};
 export const fetchJobs = async (page: number, limit: number, filters: any) => {
   console.log("LOGIC: Fetching with filters:", filters);
   

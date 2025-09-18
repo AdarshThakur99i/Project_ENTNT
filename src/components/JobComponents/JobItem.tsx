@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface Job {
   id: number;
@@ -30,9 +31,22 @@ const JobItem: React.FC<JobItemProps> = ({
   onDrop,
   onDragEnd,
 }) => {
+ 
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); 
+    e.preventDefault();  
+    onEdit(job);
+  };
+
+  const handleArchiveClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onArchive(job.id);
+  };
+
   return (
     <div
-      className="border rounded-lg p-4 shadow-md mb-4 cursor-move"
+      className="border rounded-lg p-4 shadow-md mb-4 cursor-move hover:shadow-lg transition-shadow"
       draggable
       onDragStart={() => onDragStart(index)}
       onDragEnter={() => onDragEnter(index)}
@@ -43,13 +57,16 @@ const JobItem: React.FC<JobItemProps> = ({
       <div className="flex justify-between items-start flex-wrap">
       
         <div className="flex-grow pr-4">
-          <h2
-            className={`text-lg font-semibold truncate transition-opacity duration-500 ${
-              job.status === 'archived' ? 'opacity-50' : 'opacity-100'
-            }`}
-          >
-            JOB Name: {job.title}
-          </h2>
+          
+          <Link to={`/jobs/${job.id}`} className="no-underline">
+            <h2
+              className={`text-lg font-semibold truncate transition-opacity duration-500 text-gray-800 hover:text-blue-600 ${
+                job.status === 'archived' ? 'opacity-50' : 'opacity-100'
+              }`}
+            >
+              JOB Name: {job.title}
+            </h2>
+          </Link>
           
           <div className="mt-2">
             {job.tags.map((tag) => (
@@ -64,21 +81,20 @@ const JobItem: React.FC<JobItemProps> = ({
         </div>
 
     
-       
         <div 
           className={`flex items-center gap-2 mt-2 md:mt-0 flex-shrink-0 transition-opacity duration-500 ${
-            job.status === 'archived' ? 'opacity-50' : 'opacity-100'
+            job.status === 'archived' ? 'opacity-50 pointer-events-none' : 'opacity-100'
           }`}
         >
           <button
-            onClick={() => onEdit(job)}
+            onClick={handleEditClick} 
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
           >
             Edit
           </button>
           <button
             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            onClick={() => onArchive(job.id)}  
+            onClick={handleArchiveClick} 
           >
             {job.status === 'active' ? 'Archive' : 'Activate'}
           </button>

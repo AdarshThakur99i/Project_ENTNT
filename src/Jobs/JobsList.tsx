@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useJobs } from '../hooks/useJobs';
-import JobItem from '../components/JobItem';
+import { useJobs } from '../hooks/JobsHooks/useJobs';
+import JobItem from '../components/JobComponents/JobItem';
 import Pagination from '../components/pagination';
 import JobFilters from './JobFilters';
-import JobForm from '../components/JobForm';
+import JobForm from '../components/JobComponents/JobForm';
 
 const JobsList: React.FC = () => {
   const {

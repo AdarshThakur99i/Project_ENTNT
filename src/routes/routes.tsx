@@ -2,12 +2,14 @@
 import { Routes, Route } from "react-router-dom";
 import JobPage from '../HomePages/JobPage';
 import JobsList from '../Jobs/JobsList';
+import JobDetail from "../Jobs/JobDetail";
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/jobs" element={<JobPage />} />
       <Route path="/jobs/jobsList" element={<JobsList />} />
+           <Route path="/jobs/:jobId" element={<JobDetail />} />
     </Routes>
   );
 }
