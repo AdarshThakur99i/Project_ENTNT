@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 interface Job {
   id: number;
   title: string;
@@ -12,6 +11,7 @@ interface JobItemProps {
   job: Job;
   index: number;
   onArchive: (id: number) => void;
+  onEdit: (job: Job) => void; 
   onDragStart: (index: number) => void;
   onDragEnter: (index: number) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
@@ -23,6 +23,7 @@ const JobItem: React.FC<JobItemProps> = ({
   job,
   index,
   onArchive,
+  onEdit, 
   onDragStart,
   onDragEnter,
   onDragOver,
@@ -50,7 +51,6 @@ const JobItem: React.FC<JobItemProps> = ({
             JOB Name: {job.title}
           </h2>
           
-        
           <div className="mt-2">
             {job.tags.map((tag) => (
               <span
@@ -61,18 +61,28 @@ const JobItem: React.FC<JobItemProps> = ({
               </span>
             ))}
           </div>
-          
         </div>
 
+    
        
-        <button
-          className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mt-2 md:mt-0 flex-shrink-0 ${
-              job.status === 'archived' ? 'opacity-50' : 'opacity-100'
-            }`}
-          onClick={() => onArchive(job.id)}
+        <div 
+          className={`flex items-center gap-2 mt-2 md:mt-0 flex-shrink-0 transition-opacity duration-500 ${
+            job.status === 'archived' ? 'opacity-50' : 'opacity-100'
+          }`}
         >
-          {job.status === 'active' ? 'Archive' : 'Activate'}
-        </button>
+          <button
+            onClick={() => onEdit(job)}
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+          >
+            Edit
+          </button>
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            onClick={() => onArchive(job.id)}  
+          >
+            {job.status === 'active' ? 'Archive' : 'Activate'}
+          </button>
+        </div>
       </div>
     </div>
   );
