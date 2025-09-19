@@ -3,7 +3,7 @@ import { DndContext, closestCorners, DragOverlay } from '@dnd-kit/core';
 import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 
 import type { Candidate } from '../data/CandidatesData/mockCandidates';
-import { ALL_CANDIDATES } from '../data/CandidatesData/mockCandidates';
+import * as candidateService from '../data/CandidatesData/CandidateFunctions';
 
 import KanbanColumn from '../components/CandidateComponents/KanbanColumn';
 import CandidateCard from '../components/CandidateComponents/CandidateCard';
@@ -19,7 +19,11 @@ const KanbanBoard: React.FC = () => {
 
  
   useEffect(() => {
-    setCandidates([...ALL_CANDIDATES]);
+    const loadCandidates = async () => {
+      const data = await candidateService.fetchCandidates('all');
+      setCandidates(data);
+    };
+    loadCandidates();
   }, []);
 
  
@@ -38,14 +42,14 @@ const KanbanBoard: React.FC = () => {
     setActiveCandidate(candidate || null);
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveCandidate(null);
 
     if (!over) return;
 
-    const activeCandidateId = active.id as string;
-    const activeCandidate = candidates.find(c => c.id.toString() === activeCandidateId);
+    const activeId = active.id as string;
+    const activeCandidate = candidates.find(c => c.id.toString() === activeId);
     if (!activeCandidate) return;
 
     const overId = over.id as string;
@@ -67,21 +71,27 @@ const KanbanBoard: React.FC = () => {
     const targetCandidates = candidates.filter(c => c.currentStage === overContainer);
     const maxOrder = targetCandidates.length > 0 ? Math.max(...targetCandidates.map(c => c.order ?? 0)) : 0;
 
+    const updatedCandidate = {
+      ...activeCandidate,
+      currentStage: overContainer as Candidate['currentStage'],
+      order: maxOrder + 1,
+      stageHistory: [
+        ...activeCandidate.stageHistory,
+        { stage: overContainer, timestamp: new Date().toISOString() }
+      ]
+    };
+
+    // Update local state
     setCandidates(prev =>
       prev.map(candidate =>
-        candidate.id.toString() === activeCandidateId
-          ? {
-              ...candidate,
-              currentStage: overContainer as Candidate['currentStage'],
-              order: maxOrder + 1,
-              stageHistory: [
-                ...candidate.stageHistory,
-                { stage: overContainer, timestamp: new Date().toISOString() }
-              ]
-            }
-          : candidate
+        candidate.id === updatedCandidate.id ? updatedCandidate : candidate
       )
     );
+
+    // Persist to mock backend
+    await candidateService.updateCandidate(updatedCandidate);
+
+    // Reset search term for the target column to ensure the new item is visible
     setColumnSearchTerms(prev => ({ ...prev, [overContainer]: '' }));
   };
 

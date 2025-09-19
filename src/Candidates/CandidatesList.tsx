@@ -1,10 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FixedSizeList } from 'react-window';
-
+import { FixedSizeList as List } from 'react-window';
 import { useCandidates } from '../hooks/CandidatesHook/useCandidates';
-import type { Candidate } from '../data/CandidatesData/mockCandidates';
-
 
 const CandidatesList: React.FC = () => {
   const { 
@@ -16,8 +13,6 @@ const CandidatesList: React.FC = () => {
     setStageFilter,
   } = useCandidates();
   
-  // the Row component is what react-window renders for each item.
-
   const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const candidate = searchedCandidates[index];
     return (
@@ -37,17 +32,12 @@ const CandidatesList: React.FC = () => {
 
   return (
     <div className="p-4 max-w-5xl mx-auto">
-
-    
-
-      <div className="p-4 max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-3xl font-bold">Candidates</h1>
-      
         <Link to="/candidates/kanbanview" className="px-4 py-2 bg-black-500 text-white rounded-md hover:bg-black-600">
           Go to Kanban Board
         </Link>
-      </div></div>
+      </div>
       
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
         <input
@@ -74,15 +64,17 @@ const CandidatesList: React.FC = () => {
       <div className="border rounded-lg shadow-md h-[70vh] bg-white">
         {isLoading ? (
           <div className="p-8 text-center text-gray-500">Loading candidates...</div>
-        ) : (
-          <FixedSizeList 
+        ) : searchedCandidates.length > 0 ? (
+          <List
             height={window.innerHeight * 0.7} 
             itemCount={searchedCandidates.length}
             itemSize={80} 
             width="100%"
           >
             {Row}
-          </FixedSizeList>
+          </List>
+        ) : (
+          <div className="p-8 text-center text-gray-500">No candidates found.</div>
         )}
       </div>
     </div>
