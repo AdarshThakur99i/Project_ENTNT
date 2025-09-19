@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
-import { MENTIONABLE_USERS } from '../../data/CandidatesData/mockUsers';
+import { MENTIONABLE_USERS } from '../../data/CandidatesFunctions/mockUsers';
 import './mentionStyles.css';
 
 interface NoteInputProps {

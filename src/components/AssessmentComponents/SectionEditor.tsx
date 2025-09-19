@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Section, Question } from '../../data/AssessmentData/assessment';
+import type { Section, Question } from '../../data/AssessmentFunctions/assessment';
 import QuestionEditor from './QuestionEditor';
 
 interface SectionEditorProps {

@@ -1,16 +1,13 @@
-// src/hooks/AssessmentHooks/useAssessmentBuilder.ts
-
 import { useState, useEffect } from 'react';
-import type { Assessment } from '../../data/AssessmentData/assessment';
-import { saveAssessment, loadAssessment } from '../../data/AssessmentData/assessment.service';
+import type { Assessment } from '../../data/AssessmentFunctions/assessment';
+import { saveAssessment, loadAssessment } from '../../data/AssessmentFunctions/assessment.service';
 
 export const useAssessmentBuilder = (jobId: string | undefined) => {
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isDirty, setIsDirty] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false); // 1. Declare the missing state
+  const [showConfirmation, setShowConfirmation] = useState(false); 
 
-  // Effect to load the assessment when the page opens
   useEffect(() => {
     if (!jobId) {
       setIsLoading(false);
@@ -30,13 +27,13 @@ export const useAssessmentBuilder = (jobId: string | undefined) => {
     setIsLoading(false);
   }, [jobId]);
 
-  // Wrapper function for setting state that also marks changes as "dirty"
+
   const setAssessmentAndMarkDirty = (newAssessment: Assessment) => {
     setAssessment(newAssessment);
     setIsDirty(true);
   };
 
-  // Function to manually save changes
+  // function to manually save changes
   const saveChanges = () => {
     if (assessment) {
       saveAssessment(assessment);
@@ -52,6 +49,6 @@ export const useAssessmentBuilder = (jobId: string | undefined) => {
     isLoading, 
     isDirty, 
     saveChanges,
-    showConfirmation, // 3. This is now a valid variable to return
+    showConfirmation,
   };
 };

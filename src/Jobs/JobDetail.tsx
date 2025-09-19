@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import * as jobLogic from '../hooks/JobsHooks/createOrUpdateJobsLogic';
-import type { Job } from '../data/JobsData/JobsMockData';
+import type { Job } from '../data/JobsData/Jobs.types';
 const JobDetails: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
    const [job, setJob] = useState<Job | null>(null);

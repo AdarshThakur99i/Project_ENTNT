@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Assessment, Section, Question, QuestionDetails } from '../../data/AssessmentData/assessment';
+import type { Assessment, Section, Question, QuestionDetails } from '../../data/AssessmentFunctions/assessment';
 
 const PreviewSingleChoice: React.FC<{ question: Question }> = ({ question }) => {
   if (question.details.type !== 'single-choice') return null;

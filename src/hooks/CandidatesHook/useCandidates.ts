@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import * as candidateService from '../../data/CandidatesData/CandidateFunctions';
-import type { Candidate } from '../../data/CandidatesData/mockCandidates';
+import * as candidateService from '../../data/CandidatesFunctions/CandidateFunctions';
+import type { Candidate } from '../../data/CandidatesFunctions/mockCandidates';
 
 export const useCandidates = () => {
   const [allCandidates, setAllCandidates] = useState<Candidate[]>([]);

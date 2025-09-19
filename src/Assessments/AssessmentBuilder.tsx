@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import type { Section } from '../data/AssessmentData/assessment';
+import type { Section } from '../data/AssessmentFunctions/assessment';
 import SectionEditor from '../components/AssessmentComponents/SectionEditor';
 import AssessmentPreview from '../components/AssessmentComponents/AssessmentPreview';
 import { useAssessmentBuilder } from '../hooks/AssessmentHooks/useAssessmentBuilder';

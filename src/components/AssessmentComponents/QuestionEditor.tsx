@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Question, QuestionDetails } from '../../data/AssessmentData/assessment';
+import type { Question, QuestionDetails } from '../../data/AssessmentFunctions/assessment';
 
 interface QuestionEditorProps {
   question: Question;

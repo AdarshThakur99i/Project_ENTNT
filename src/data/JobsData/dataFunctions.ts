@@ -1,4 +1,4 @@
-import { ALL_JOBS, type Job, type JobStatus } from './JobsMockData';
+import { ALL_JOBS, type Job, type JobStatus } from './Jobs.types';
 
 export const getAllJobs = (): Job[] => ALL_JOBS;
 

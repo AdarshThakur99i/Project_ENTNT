@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { DndContext, closestCorners, DragOverlay } from '@dnd-kit/core';
 import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 
-import type { Candidate } from '../data/CandidatesData/mockCandidates';
-import * as candidateService from '../data/CandidatesData/CandidateFunctions';
+import type { Candidate } from '../data/CandidatesFunctions/mockCandidates';
+import * as candidateService from '../data/CandidatesFunctions/CandidateFunctions';
 
 import KanbanColumn from '../components/CandidateComponents/KanbanColumn';
 import CandidateCard from '../components/CandidateComponents/CandidateCard';

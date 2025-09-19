@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import CandidateCard from './CandidateCard';
-import type { Candidate } from '../../data/CandidatesData/mockCandidates';
+import type { Candidate } from '../../data/CandidatesFunctions/mockCandidates';
 
 interface KanbanColumnProps {
   id: string;

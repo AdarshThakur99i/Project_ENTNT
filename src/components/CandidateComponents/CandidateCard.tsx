@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import type { Candidate } from '../../data/CandidatesData/mockCandidates';
+import type { Candidate } from '../../data/CandidatesFunctions/mockCandidates';
 import { Link } from 'react-router-dom';
 
 interface CandidateCardProps {

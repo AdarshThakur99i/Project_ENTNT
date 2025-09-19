@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCandidates } from '../hooks/CandidatesHook/useCandidates';
-import type { Candidate, Note as NoteType } from '../data/CandidatesData/mockCandidates';
+import type { Candidate, Note as NoteType } from '../data/CandidatesFunctions/mockCandidates';
 import Note from '../components/CandidateComponents/Note';
 import NoteInput from '../components/CandidateComponents/NoteInput';
 

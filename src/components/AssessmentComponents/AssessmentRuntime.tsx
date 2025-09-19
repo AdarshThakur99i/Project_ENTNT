@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
-import { loadAssessment, saveAssessmentResponse } from '../../data/AssessmentData/assessment.service';
-import type { Assessment, Question } from '../../data/AssessmentData/assessment';
+import { loadAssessment, saveAssessmentResponse } from '../../data/AssessmentFunctions/assessment.service';
+import type { Assessment, Question } from '../../data/AssessmentFunctions/assessment';
 
 const AssessmentRuntime: React.FC = () => {
   const { jobId, candidateId } = useParams<{ jobId: string, candidateId: string }>();

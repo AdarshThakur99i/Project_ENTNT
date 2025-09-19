@@ -1,5 +1,5 @@
 
-import { TAG_POOL, type Job, type JobStatus } from '../../data/JobsData/JobsMockData';
+import { TAG_POOL, type Job, type JobStatus } from '../../data/JobsData/Jobs.types';
 import { 
   getAllJobs, 
   addJob, 
