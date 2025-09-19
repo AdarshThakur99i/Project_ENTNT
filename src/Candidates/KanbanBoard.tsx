@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 const stages = ['Applied', 'Screening', 'Interview', 'Hired', 'Rejected'];
 
 const KanbanBoard: React.FC = () => {
-  // local state for all candidates
+ 
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [activeCandidate, setActiveCandidate] = useState<Candidate | null>(null);
   const [columnSearchTerms, setColumnSearchTerms] = useState<{ [key: string]: string }>({});

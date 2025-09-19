@@ -5,6 +5,12 @@ export interface Candidate {
   order?: number;
   currentStage: 'Applied' | 'Screening' | 'Interview' | 'Hired' | 'Rejected';
   stageHistory: { stage: string; timestamp: string }[];
+  notes?: Note[];
+}
+export interface Note {
+  noteId:number,
+  text: string;
+  timestamp: string;
 }
 
 const STAGES = ['Applied', 'Screening', 'Interview', 'Hired', 'Rejected'] as const;
@@ -31,5 +37,6 @@ export const ALL_CANDIDATES: Candidate[] = Array.from({ length: 1000 }, (_, i) =
     stageHistory: [
       { stage: currentStage, timestamp: new Date(Date.now() - Math.random() * 86400000).toISOString() }
     ],
+    notes:[],
   };
 });
