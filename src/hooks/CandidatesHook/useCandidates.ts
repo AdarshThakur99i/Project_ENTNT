@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import * as candidateService from '../../data/CandidatesData/CandidateFunctions';
 import type { Candidate } from '../../data/CandidatesData/mockCandidates';

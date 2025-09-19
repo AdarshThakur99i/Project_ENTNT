@@ -1,4 +1,3 @@
-
 import { ALL_CANDIDATES } from './mockCandidates';
 import type { Candidate } from './mockCandidates';
 

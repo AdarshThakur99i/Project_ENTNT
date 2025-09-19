@@ -1,44 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { DndContext, closestCorners, DragOverlay } from '@dnd-kit/core';
 import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 
 import type { Candidate } from '../data/CandidatesData/mockCandidates';
+import { ALL_CANDIDATES } from '../data/CandidatesData/mockCandidates';
 
-import { useCandidates } from '../hooks/CandidatesHook/useCandidates';
 import KanbanColumn from '../components/CandidateComponents/KanbanColumn';
 import CandidateCard from '../components/CandidateComponents/CandidateCard';
 import { Link } from 'react-router-dom';
 
+const stages = ['Applied', 'Screening', 'Interview', 'Hired', 'Rejected'];
+
 const KanbanBoard: React.FC = () => {
-  const { searchedCandidates, setAllCandidates } = useCandidates();
+  // local state for all candidates
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [activeCandidate, setActiveCandidate] = useState<Candidate | null>(null);
   const [columnSearchTerms, setColumnSearchTerms] = useState<{ [key: string]: string }>({});
 
-  const stages = ['Applied', 'Screening', 'Interview', 'Hired', 'Rejected'];
+ 
+  useEffect(() => {
+    setCandidates([...ALL_CANDIDATES]);
+  }, []);
 
-  const candidatesByStage = stages.reduce((acc, stage) => {
-    const stageCandidate = searchedCandidates
-      .filter(c => c.currentStage === stage)
-      .sort((a, b) => {
-        // sort by order field if it exists, otherwise by most recent stage change
-        if (a.order !== undefined && b.order !== undefined) {
-          return a.order - b.order;
-        }
-        if (a.stageHistory.length > 0 && b.stageHistory.length > 0) {
-          const aLatest = new Date(a.stageHistory[a.stageHistory.length - 1].timestamp);
-          const bLatest = new Date(b.stageHistory[b.stageHistory.length - 1].timestamp);
-          return bLatest.getTime() - aLatest.getTime();
-        }
-        return 0;
-      });
-    
-    acc[stage] = stageCandidate;
-    return acc;
-  }, {} as { [key: string]: Candidate[] });
+ 
+  const candidatesByStage = useMemo(() => {
+    return stages.reduce((acc, stage) => {
+      acc[stage] = candidates
+        .filter(c => c.currentStage === stage)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      return acc;
+    }, {} as { [key: string]: Candidate[] });
+  }, [candidates]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const candidate = searchedCandidates.find(c => c.id === active.id);
+    const candidate = candidates.find(c => c.id.toString() === active.id);
     setActiveCandidate(candidate || null);
   };
 
@@ -46,43 +42,47 @@ const KanbanBoard: React.FC = () => {
     const { active, over } = event;
     setActiveCandidate(null);
 
-    if (!over || active.id === over.id) return;
+    if (!over) return;
 
-    const activeId = active.id as number;
-    const newStage = over.id as Candidate['currentStage'];
+    const activeCandidateId = active.id as string;
+    const activeCandidate = candidates.find(c => c.id.toString() === activeCandidateId);
+    if (!activeCandidate) return;
 
-    setAllCandidates(prev => {
-      const candidateToMove = prev.find(c => c.id === activeId);
-      if (!candidateToMove || candidateToMove.currentStage === newStage) return prev;
+    const overId = over.id as string;
+    const activeContainer = activeCandidate.currentStage;
 
-      // update the moved candidate
-      const updatedCandidate: Candidate = {
-        ...candidateToMove,
-        currentStage: newStage,
-        order: 0, 
-        stageHistory: [
-          ...candidateToMove.stageHistory,
-          { stage: newStage, timestamp: new Date().toISOString() }
-        ]
-      };
+    let overContainer: string | undefined;
+    if (stages.includes(overId)) {
+      overContainer = overId;
+    } else {
+      const overCandidate = candidates.find(c => c.id.toString() === overId);
+      overContainer = overCandidate?.currentStage;
+    }
 
-      
-      return prev.map(candidate => {
-        if (candidate.id === activeId) {
-          return updatedCandidate;
-        }
-        
-        // increment order for other candidates in the same new stage
-        if (candidate.currentStage === newStage) {
-          return {
-            ...candidate,
-            order: (candidate.order || 0) + 1
-          };
-        }
-        
-        return candidate;
-      });
-    });
+    if (!overContainer || activeContainer === overContainer) {
+      return;
+    }
+
+   
+    const targetCandidates = candidates.filter(c => c.currentStage === overContainer);
+    const maxOrder = targetCandidates.length > 0 ? Math.max(...targetCandidates.map(c => c.order ?? 0)) : 0;
+
+    setCandidates(prev =>
+      prev.map(candidate =>
+        candidate.id.toString() === activeCandidateId
+          ? {
+              ...candidate,
+              currentStage: overContainer as Candidate['currentStage'],
+              order: maxOrder + 1,
+              stageHistory: [
+                ...candidate.stageHistory,
+                { stage: overContainer, timestamp: new Date().toISOString() }
+              ]
+            }
+          : candidate
+      )
+    );
+    setColumnSearchTerms(prev => ({ ...prev, [overContainer]: '' }));
   };
 
   const handleColumnSearchChange = (stage: string, value: string) => {
@@ -91,9 +91,7 @@ const KanbanBoard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-    
       <div className="h-screen flex flex-col">
-     
         <div className="flex-shrink-0 bg-white shadow-sm border-b px-6 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold text-gray-900">Kanban Board</h1>
@@ -106,21 +104,19 @@ const KanbanBoard: React.FC = () => {
           </div>
         </div>
 
-        
         <div className="flex-1 overflow-hidden">
           <DndContext
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             collisionDetection={closestCorners}
           >
-            
             <div className="h-full flex gap-4 overflow-x-auto p-6">
               {stages.map(stage => (
                 <KanbanColumn
                   key={stage}
                   id={stage}
                   title={stage}
-                  candidates={candidatesByStage[stage]}
+                  candidates={candidatesByStage[stage] || []}
                   searchTerm={columnSearchTerms[stage] || ''}
                   onSearchChange={(value) => handleColumnSearchChange(stage, value)}
                 />
@@ -128,7 +124,9 @@ const KanbanBoard: React.FC = () => {
             </div>
             
             <DragOverlay>
-              {activeCandidate ? <CandidateCard candidate={activeCandidate} /> : null}
+              {activeCandidate ? (
+                <CandidateCard candidate={activeCandidate} isDragOverlay={true} />
+              ) : null}
             </DragOverlay>
           </DndContext>
         </div>
