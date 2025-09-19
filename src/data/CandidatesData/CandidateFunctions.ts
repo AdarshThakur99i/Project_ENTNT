@@ -37,7 +37,7 @@ export const updateCandidate = async (updatedCandidate: Candidate) => {
         MOCK_CANDIDATES[index] = { ...updatedCandidate };
         resolve(MOCK_CANDIDATES[index]);
       } else {
-        resolve(updatedCandidate); // If not found, just return the updated one 
+        resolve(updatedCandidate); 
       }
     }, 300);
   });

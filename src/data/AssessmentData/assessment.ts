@@ -15,6 +15,7 @@ export interface Question {
     questionId: string;
     value: any;
   };
+   correctAnswer?: any;
 }
 
 export interface Section {

@@ -1,41 +1,232 @@
-import React from 'react';
-import type { Question } from '../../data/AssessmentData/assessment';
+import React, { useState } from 'react';
+import type { Question, QuestionDetails } from '../../data/AssessmentData/assessment';
 
 interface QuestionEditorProps {
   question: Question;
+  allQuestions: Question[];
+  updateQuestion: (updatedQuestion: Question) => void;
+  deleteQuestion: () => void;
 }
 
-const QuestionEditor: React.FC<QuestionEditorProps> = ({ question }) => {
+const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, allQuestions, updateQuestion, deleteQuestion }) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isConditionEnabled, setIsConditionEnabled] = useState(!!question.condition);
+
+
+  const handleTextChange = (newText: string) => updateQuestion({ ...question, text: newText });
+  const handleRequiredChange = (isRequired: boolean) => updateQuestion({ ...question, isRequired });
+
+  const handleTypeChange = (newType: QuestionDetails['type']) => {
+    let newDetails: QuestionDetails;
+    if (newType === 'single-choice' || newType === 'multi-choice') {
+      newDetails = { type: newType, options: [''] };
+    } else {
+      newDetails = { type: newType };
+    }
+    const { correctAnswer, ...rest } = question;
+    updateQuestion({ ...rest, details: newDetails });
+  };
+  
+  const handleOptionChange = (index: number, value: string) => {
+    if (question.details.type !== 'single-choice' && question.details.type !== 'multi-choice') return;
+    const newOptions = [...question.details.options];
+    newOptions[index] = value;
+    updateQuestion({ ...question, details: { ...question.details, options: newOptions } });
+  };
+
+  const handleAddOption = () => {
+    if (question.details.type !== 'single-choice' && question.details.type !== 'multi-choice') return;
+    const newOptions = [...question.details.options, ''];
+    updateQuestion({ ...question, details: { ...question.details, options: newOptions } });
+  };
+
+  const handleDeleteOption = (index: number) => {
+    if (question.details.type !== 'single-choice' && question.details.type !== 'multi-choice') return;
+    const newOptions = question.details.options.filter((_, i) => i !== index);
+    updateQuestion({ ...question, details: { ...question.details, options: newOptions } });
+  };
+
+  const handleDetailChange = (key: string, value: any) => {
+    updateQuestion({ ...question, details: { ...question.details, [key]: value }});
+  };
+
+  const handleConditionToggle = (enabled: boolean) => {
+    setIsConditionEnabled(enabled);
+    if (!enabled) {
+      const { condition, ...rest } = question;
+      updateQuestion(rest);
+    } else {
+      updateQuestion({ ...question, condition: { questionId: '', value: '' } });
+    }
+  };
+
+  const handleConditionChange = (key: 'questionId' | 'value', value: any) => {
+    updateQuestion({ ...question, condition: { ...question.condition!, [key]: value } });
+  };
+
+  const handleCorrectAnswerChange = (answer: any) => {
+    updateQuestion({ ...question, correctAnswer: answer });
+  };
+
+  const handleMultiChoiceCorrectAnswer = (option: string, isChecked: boolean) => {
+    const currentAnswers = Array.isArray(question.correctAnswer) ? question.correctAnswer : [];
+    if (isChecked) {
+      handleCorrectAnswerChange([...currentAnswers, option]);
+    } else {
+      handleCorrectAnswerChange(currentAnswers.filter(a => a !== option));
+    }
+  };
+
+  const CorrectAnswerEditor = () => {
+    switch (question.details.type) {
+      case 'single-choice':
+        return (
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-2">Set Correct Answer</h4>
+            <div className="space-y-2">
+              {question.details.options.map((option, index) => (
+                <div key={index} className="flex items-center">
+                  {/* --- THIS IS THE FIX --- */}
+                  <input
+                    type="radio"
+                    id={`correct-${question.id}-${index}`} 
+                    name={`correct-answer-${question.id}`}
+                    checked={question.correctAnswer === option}
+                    onChange={() => handleCorrectAnswerChange(option)}
+                    className="h-4 w-4"
+                  />
+                  <label 
+                    htmlFor={`correct-${question.id}-${index}`} 
+                    className="ml-2 text-sm text-gray-700"
+                  >
+                    {option || '(empty option)'}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'multi-choice':
+        return (
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-2">Set Correct Answers</h4>
+            <div className="space-y-2">
+              {question.details.options.map((option, index) => (
+                <div key={index} className="flex items-center">
+                  <input type="checkbox" id={`correct-${question.id}-${index}`} checked={(question.correctAnswer || []).includes(option)} onChange={(e) => handleMultiChoiceCorrectAnswer(option, e.target.checked)} className="h-4 w-4" />
+                  <label htmlFor={`correct-${question.id}-${index}`} className="ml-2 text-sm text-gray-700">{option || '(empty option)'}</label>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'short-text':
+      case 'long-text':
+      case 'numeric':
+        return (
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-1">Set Correct Answer</h4>
+            <input type={question.details.type === 'numeric' ? 'number' : 'text'} value={question.correctAnswer || ''} onChange={(e) => handleCorrectAnswerChange(e.target.value)} className="w-full p-2 border rounded-md text-sm" placeholder="Type the exact correct answer..." />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+
   return (
-    <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
-      <textarea
-        defaultValue={question.text}
-        placeholder="Type your question here..."
-        className="w-full p-2 border rounded-md"
-        rows={2}
-      />
-      <div className="flex items-center justify-between mt-2">
-        <select className="p-2 border rounded-md text-sm">
-          <option value="short-text">Short Text</option>
-          <option value="long-text">Long Text</option>
-          <option value="single-choice">Single Choice</option>
-          <option value="multi-choice">Multi-choice</option>
-          <option value="numeric">Numeric</option>
-          <option value="file-upload">File Upload</option>
-        </select>
-        
-        <div className="flex items-center gap-2">
-          <label htmlFor={`required-${question.id}`} className="text-sm text-gray-600">
-            Required
-          </label>
-          <input
-            type="checkbox"
-            id={`required-${question.id}`}
-            defaultChecked={question.isRequired}
-            className="h-4 w-4"
-          />
-        </div>
+    <div className="p-4 bg-gray-50 border border-gray-200 rounded-md relative group">
+      <div className="flex justify-between items-center mb-2">
+        <button onClick={() => setIsCollapsed(!isCollapsed)} className="p-1 text-gray-500 hover:text-blue-600" aria-label={isCollapsed ? 'Expand question' : 'Collapse question'}>
+          {isCollapsed ? <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 9V5a1 1 0 012 0v4h4a1 1 0 010 2H9z" clipRule="evenodd" /></svg> : <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" /></svg>}
+        </button>
+        {isCollapsed && <p className="text-gray-800 font-medium truncate flex-grow mx-2">{question.text || '(Question is empty)'}</p>}
+        <button onClick={deleteQuestion} className="p-1 rounded-full text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Delete question">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
       </div>
+
+      {!isCollapsed && (
+        <>
+          <textarea value={question.text} onChange={(e) => handleTextChange(e.target.value)} placeholder="Type your question here..." className="w-full p-2 border rounded-md" rows={2} />
+          <div className="flex items-center justify-between mt-2">
+            <select value={question.details.type} onChange={(e) => handleTypeChange(e.target.value as QuestionDetails['type'])} className="p-2 border rounded-md text-sm">
+              <option value="short-text">Short Text</option>
+              <option value="long-text">Long Text</option>
+              <option value="single-choice">Single Choice</option>
+              <option value="multi-choice">Multi-choice</option>
+              <option value="numeric">Numeric</option>
+              <option value="file-upload">File Upload</option>
+            </select>
+            <div className="flex items-center gap-2">
+              <label htmlFor={`required-${question.id}`} className="text-sm text-gray-600">Required</label>
+              <input type="checkbox" id={`required-${question.id}`} checked={question.isRequired} onChange={(e) => handleRequiredChange(e.target.checked)} className="h-4 w-4" />
+            </div>
+          </div>
+
+          {(question.details.type === 'single-choice' || question.details.type === 'multi-choice') && (
+            <div className="mt-4 pt-4 border-t">
+              <h4 className="text-sm font-semibold text-gray-600 mb-2">Options</h4>
+              <div className="space-y-2">
+                {question.details.options.map((option, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <input type="text" value={option} onChange={(e) => handleOptionChange(index, e.target.value)} placeholder={`Option ${index + 1}`} className="w-full p-1 border-b focus:outline-none focus:border-blue-500" />
+                    <button onClick={() => handleDeleteOption(index)} className="p-1 text-gray-400 hover:text-red-500" aria-label="Delete option"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                  </div>
+                ))}
+              </div>
+              <button onClick={handleAddOption} className="mt-2 text-sm text-blue-500 hover:underline">+ Add Option</button>
+            </div>
+          )}
+
+          <div className="mt-4 pt-4 border-t">
+            <CorrectAnswerEditor />
+          </div>
+
+          <div className="mt-4 pt-4 border-t space-y-4">
+            {(question.details.type === 'short-text' || question.details.type === 'long-text') && (
+              <div>
+                <label className="text-sm font-semibold text-gray-700">Validation</label>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-sm">Max Length:</span>
+                  <input type="number" value={question.details.maxLength || ''} onChange={e => handleDetailChange('maxLength', parseInt(e.target.value))} className="w-24 p-1 border rounded-md text-sm" />
+                </div>
+              </div>
+            )}
+            {question.details.type === 'numeric' && (
+              <div>
+                <label className="text-sm font-semibold text-gray-700">Validation</label>
+                <div className="flex items-center gap-4 mt-1">
+                  <div className="flex items-center gap-2"><span className="text-sm">Min:</span><input type="number" value={question.details.min || ''} onChange={e => handleDetailChange('min', parseInt(e.target.value))} className="w-24 p-1 border rounded-md text-sm" /></div>
+                  <div className="flex items-center gap-2"><span className="text-sm">Max:</span><input type="number" value={question.details.max || ''} onChange={e => handleDetailChange('max', parseInt(e.ટ.value))} className="w-24 p-1 border rounded-md text-sm" /></div>
+                </div>
+              </div>
+            )}
+            <div>
+              <label className="text-sm font-semibold text-gray-700">Logic</label>
+              <div className="flex items-center gap-2 mt-1">
+                <input type="checkbox" id={`cond-${question.id}`} checked={isConditionEnabled} onChange={e => handleConditionToggle(e.target.checked)} className="h-4 w-4" />
+                <label htmlFor={`cond-${question.id}`} className="text-sm">Enable Conditional Logic</label>
+              </div>
+              {isConditionEnabled && (
+                <div className="p-3 mt-2 bg-white rounded-md border space-y-2">
+                  <p className="text-sm">Show this question only if...</p>
+                  <select value={question.condition?.questionId || ''} onChange={e => handleConditionChange('questionId', e.target.value)} className="w-full p-2 border rounded-md text-sm">
+                    <option value="">Select a question...</option>
+                    {allQuestions.filter(q => q.id !== question.id).map(q => (<option key={q.id} value={q.id}>{q.text.substring(0, 50) || `(Question ID: ${q.id})` }...</option>))}
+                  </select>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">has the answer:</span>
+                    <input type="text" value={question.condition?.value || ''} onChange={e => handleConditionChange('value', e.target.value)} className="w-full p-2 border rounded-md text-sm" />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
