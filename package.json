@@ -15,7 +15,6 @@
     "@tailwindcss/vite": "^4.1.13",
     "dexie": "^4.2.0",
     "react": "^19.1.1",
-    "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.62.0",
     "react-mentions": "^4.4.10",
