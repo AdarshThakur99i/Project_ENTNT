@@ -12,6 +12,16 @@ interface KanbanColumnProps {
   onSearchChange: (value: string) => void;
 }
 
+const getStageHeaderStyle = (stage: string) => {
+    switch (stage) {
+        case 'Hired': return 'border-t-4 border-green-500';
+        case 'Rejected': return 'border-t-4 border-red-500';
+        case 'Interview': return 'border-t-4 border-indigo-500';
+        case 'Screening': return 'border-t-4 border-yellow-500';
+        case 'Applied': default: return 'border-t-4 border-blue-500';
+    }
+};
+
 const KanbanColumn: React.FC<KanbanColumnProps> = ({ 
   id, 
   title, 
@@ -22,9 +32,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   const { setNodeRef, isOver } = useDroppable({ id });
 
   const filteredCandidates = useMemo(() => {
-    if (!searchTerm) {
-      return candidates;
-    }
+    if (!searchTerm) return candidates;
     const lowercasedTerm = searchTerm.toLowerCase();
     return candidates.filter(c =>
       c.name.toLowerCase().includes(lowercasedTerm) ||
@@ -32,42 +40,44 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
     );
   }, [candidates, searchTerm]);
 
-  //show total count of candidates in this stage (not just filtered)
   const totalCount = candidates.length;
   const filteredCount = filteredCandidates.length;
 
   return (
-    <div className={`flex-1 min-w-[350px] bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col transition-colors ${
-      isOver ? 'border-blue-400 bg-blue-50' : ''
-    }`}>
+    <div className={`w-full max-w-sm md:w-1/3 flex-shrink-0 bg-gray-100 rounded-xl flex flex-col ${getStageHeaderStyle(title)}`}>
       
-      <div className="p-5 border-b border-gray-100">
+      <div className="p-4 border-b border-gray-200">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="font-bold text-xl capitalize text-gray-800">{title}</h3>
-          <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full font-medium">
-            {searchTerm ? `${filteredCount}/${totalCount}` : totalCount}
+          <h3 className="font-bold text-lg capitalize text-gray-800">{title}</h3>
+          <span className="text-sm text-gray-600 bg-gray-200 px-3 py-1 rounded-full font-medium">
+            {searchTerm ? `${filteredCount} / ${totalCount}` : totalCount}
           </span>
         </div>
         
-        <input
-          type="text"
-          placeholder="Search in this column..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          onClick={(e) => e.stopPropagation()}
-          className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
+        <div className="relative">
+             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search candidates..."
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full p-2 pl-10 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+        </div>
       </div>
       
-      <div className={`flex-1 overflow-y-auto ${isOver ? 'bg-blue-25' : ''}`}>
+      <div className="flex-1 overflow-y-auto">
         <SortableContext
           items={filteredCandidates.map(c => c.id.toString())}
           strategy={verticalListSortingStrategy}
         >
           <div 
             ref={setNodeRef} 
-            className={`p-5 space-y-3 min-h-full transition-colors ${
-              isOver ? 'bg-gradient-to-b from-blue-50 to-transparent' : ''
+            className={`p-4 space-y-3 min-h-full transition-colors duration-300 ${
+              isOver ? 'bg-blue-50' : ''
             }`}
           >
             {filteredCandidates.length > 0 ? (
@@ -75,24 +85,12 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 <CandidateCard key={candidate.id} candidate={candidate} />
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 ${
-                  isOver ? 'bg-blue-200' : 'bg-gray-100'
-                }`}>
-                  <svg className={`w-10 h-10 ${isOver ? 'text-blue-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                </div>
-                <p className={`text-base font-medium ${
-                  isOver ? 'text-blue-600' : 'text-gray-400'
-                }`}>
-                  {searchTerm ? 'No matching candidates' : (isOver ? 'Drop here!' : 'Drop candidates here')}
+              <div className={`text-center py-16 border-2 border-dashed rounded-lg ${
+                isOver ? 'border-blue-400 bg-blue-100' : 'border-gray-300'
+              }`}>
+                <p className={`text-sm font-medium ${isOver ? 'text-blue-600' : 'text-gray-500'}`}>
+                    {searchTerm ? 'No matching candidates' : 'Drop candidates here'}
                 </p>
-                {searchTerm && !isOver && (
-                  <p className="text-gray-300 text-sm mt-2">
-                    Try adjusting your search terms
-                  </p>
-                )}
               </div>
             )}
           </div>

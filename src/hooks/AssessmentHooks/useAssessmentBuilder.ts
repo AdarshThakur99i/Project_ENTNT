@@ -1,127 +1,79 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import type { Assessment } from '../../data/AssessmentFunctions/assessment';
-import { fetchAssessmentsForJob, createAssessment, updateAssessment, deleteAssessment } from '../../api/JobsApi/AssessmentApi'; 
+import { fetchAssessmentsForJob, createAssessment, updateAssessment, deleteAssessment } from '../../api/JobsApi/AssessmentApi';
 
-// Define the possible states for the save operation
-type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
-
-/**
- * A custom hook to manage the state and API interactions for building a single assessment for a job.
- * @param jobId - The ID of the job for which to build the assessment.
- */
 export const useAssessmentBuilder = (jobId: string | undefined) => {
-  // State for the single assessment being edited
-  const [activeAssessment, setActiveAssessment] = useState<Assessment | null>(null);
-  
+  const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDirty, setIsDirty] = useState(false); // Tracks if there are unsaved changes
-  
-  // State to manage the UI feedback for the save operation
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   
   const numericJobId = jobId ? parseInt(jobId, 10) : 0;
 
-  // Effect to load the assessment data when the hook mounts or jobId changes
   useEffect(() => {
-    const loadAssessment = async () => {
+    const loadAssessments = async () => {
       if (!numericJobId) {
         setIsLoading(false);
         return;
       }
-      
       setIsLoading(true);
       try {
         const existingAssessments = await fetchAssessmentsForJob(numericJobId);
-        
-        if (existingAssessments.length > 0) {
-          // If an assessment exists, load the first one into the editor
-          setActiveAssessment(existingAssessments[0]);
-        } else {
-          // If no assessment exists, prepare a new, default one to be created on first save
-          const newAssessmentData: Omit<Assessment, 'id'> = {
-            jobId: numericJobId,
-            title: 'New Assessment',
-            sections: [{
-                id: `section-${Date.now()}`,
-                title: 'Section 1',
-                questions: []
-            }],
-          };
-          // Cast to Assessment, as the 'id' will be added upon saving
-          setActiveAssessment(newAssessmentData as Assessment);
-        }
+        setAssessments(existingAssessments);
       } catch (error) {
         console.error("Failed to load assessments:", error);
-        // Handle error state in UI if necessary
+        setAssessments([]);
       } finally {
         setIsLoading(false);
-        setIsDirty(false); // Start with a clean state
       }
     };
+    loadAssessments();
+  }, [jobId]);
 
-    loadAssessment();
-  }, [numericJobId]);
+  const handleCreateAssessment = async () => {
+    if (!numericJobId) return;
 
-  // A stable function to update the assessment state from the component
-  const updateActiveAssessment = useCallback((updatedAssessment: Assessment) => {
-    setActiveAssessment(updatedAssessment);
-    setIsDirty(true); // Mark that there are now unsaved changes
-  }, []);
-
-  // A single function to handle both creating and updating the assessment
-  const handleSaveChanges = async () => {
-    if (!activeAssessment || !isDirty) {
-      return; // Do nothing if there's no assessment or no changes
-    }
-
-    setSaveStatus('saving');
+    const newAssessmentData: Omit<Assessment, 'id'> = {
+      jobId: numericJobId,
+      title: `New Assessment #${assessments.length + 1}`,
+      sections: [],
+    };
     
     try {
-      let savedAssessment: Assessment;
-      if ('id' in activeAssessment && activeAssessment.id) {
-        // If it has an ID, it's an existing assessment, so update it
-        savedAssessment = await updateAssessment(activeAssessment);
-      } else {
-        // If it lacks an ID, it's a new assessment, so create it
-        const { id, ...assessmentData } = activeAssessment;
-        savedAssessment = await createAssessment(numericJobId, assessmentData);
-      }
-      
-      // Sync state with the returned data from the API (e.g., to get the new ID)
-      setActiveAssessment(savedAssessment);
-      setIsDirty(false);
-      setSaveStatus('saved');
-      
+      const createdAssessment = await createAssessment(numericJobId, newAssessmentData);
+      setAssessments(prev => [...prev, createdAssessment]);
+      return createdAssessment;
     } catch (error) {
-      console.error("Failed to save assessment:", error);
-      setSaveStatus('error');
-    } finally {
-      // Reset the save status indicator after 3 seconds
-      setTimeout(() => setSaveStatus('idle'), 3000);
+      console.error("Failed to create assessment:", error);
+      alert("Error: Could not create the assessment.");
+      return null;
+    }
+  };
+
+  const handleUpdateAssessment = async (assessmentToUpdate: Assessment) => {
+    try {
+        await updateAssessment(assessmentToUpdate);
+    } catch (error) {
+        console.error("Failed to update assessment:", error);
+        alert("Error: Could not save changes.");
     }
   };
   
-  // Handler to delete the current assessment
-  const handleDeleteAssessment = async () => {
-      if (!activeAssessment || !activeAssessment.id) return;
-      
-      try {
-          await deleteAssessment(activeAssessment.id);
-          // After deleting, you might want to navigate away or reset to a new default assessment
-          setActiveAssessment(null); // Or reset to a new blank assessment
-      } catch (error) {
-          console.error("Failed to delete assessment:", error);
-          // Optionally show an error message
-      }
+  const handleDeleteAssessment = async (assessmentId: number) => {
+    setAssessments(prev => prev.filter(asmnt => asmnt.id !== assessmentId));
+    
+    try {
+      await deleteAssessment(assessmentId);
+    } catch (error) {
+        console.error("Failed to delete assessment:", error);
+        alert("Error: Could not delete assessment.");
+    }
   };
   
   return { 
-    activeAssessment, 
-    updateActiveAssessment,
+    assessments, 
+    setAssessments, 
     isLoading, 
-    isDirty,
-    saveStatus,
-    handleSaveChanges, 
+    handleCreateAssessment, 
+    handleUpdateAssessment, 
     handleDeleteAssessment,
   };
 };

@@ -91,7 +91,10 @@ const KanbanBoard: React.FC = () => {
   };
 
   if (isLoading) {
-      return <div className="p-8 text-center text-gray-500">Loading Kanban Board...</div>;
+      return  <div className="animate-pulse">
+    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+  Loading Kanban Board...</div>;
   }
 
   return (
@@ -101,7 +104,7 @@ const KanbanBoard: React.FC = () => {
            <div className="flex justify-between items-center flex-wrap gap-4">
               <div>
                 <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Kanban Board</h1>
-                <p className="text-gray-600 mt-1 text-sm">Visually track candidates through the hiring stages.</p>
+                <p className="text-gray-600 mt-1 text-sm">Visually track candidates through the hiring stages.Drag and Drop to move through stages.</p>
               </div>
               <Link 
                 to={`/jobs/${jobId}/candidates`} 

@@ -23,32 +23,37 @@ const NoteInput: React.FC<NoteInputProps> = ({ onSave }) => {
   }));
 
   return (
-    <div className="mt-4 flex gap-2 items-end">
-      <div className="flex-grow">
-        <MentionsInput
-          value={text}
-          onChange={(event) => setText(event.target.value)}
-          placeholder="Add a note... mention a user with @"
-          className="mentions"
-        >
-          <Mention
-            trigger="@"
-            data={userSuggestions}
-            markup="@[__display__](__id__)"
-            displayTransform={(_id, display) => `@${display}`}
-          />
-        </MentionsInput>
-      </div>
-      
-    
-      <button
-        onClick={handleSave}
-        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 relative z-20 self-stretch" // self-stretch makes button fill vertical space
-      >
-        Save Note
-      </button>
+    <div className="flex items-start gap-4 p-4">
+        <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-1">
+          HR
+        </div>
+        <div className="flex-grow flex items-start gap-2">
+            <div className="flex-grow bg-white p-2 rounded-lg border border-gray-200 shadow-sm">
+                <MentionsInput
+                  value={text}
+                  onChange={(event) => setText(event.target.value)}
+                  placeholder="Add a note... mention a user with @"
+                  className="mentions"
+                >
+                  <Mention
+                    trigger="@"
+                    data={userSuggestions}
+                    markup="@[__display__](__id__)"
+                    displayTransform={(_id, display) => `@${display}`}
+                  />
+                </MentionsInput>
+            </div>
+            <button
+              onClick={handleSave}
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-md shadow-sm hover:shadow-md hover:from-blue-700 hover:to-indigo-700 transition-all flex-shrink-0 mt-1"
+            >
+              Save
+              
+            </button>
+        </div>
     </div>
   );
 };
 
 export default NoteInput;
+

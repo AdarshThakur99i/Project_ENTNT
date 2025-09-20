@@ -3,7 +3,7 @@ import { db } from '../db';
 import type { Candidate, Note } from '../../CandidatesFunctions/mockCandidates';
 
 export const candidateHandlers = [
-  // 1. Handler to get candidates for a specific job
+  // Handler to get candidates for a specific job
   http.get('/api/jobs/:jobId/candidates', async ({ params, request }) => {
     const jobId = Number(params.jobId);
     const url = new URL(request.url);
@@ -19,7 +19,7 @@ export const candidateHandlers = [
     return Response.json(candidates);
   }),
 
-  // 2. Handler to get a single candidate by their ID
+  // Handler to get a single candidate by their ID
   http.get('/api/candidates/:candidateId', async ({ params }) => {
     const candidateId = Number(params.candidateId);
     const candidate = await db.candidates.get(candidateId);
@@ -31,14 +31,14 @@ export const candidateHandlers = [
     return new Response(null, { status: 204 });
   }),
 
-  // 3. Handler to update a candidate
+  // Handler to update a candidate
   http.put('/api/candidates/:candidateId', async ({ request }) => {
     const updatedCandidate = (await request.json()) as Candidate;
     await db.candidates.put(updatedCandidate);
     return Response.json(updatedCandidate);
   }),
 
-  // 4. Handler to add a new note to a candidate
+  // Handler to add a new note to a candidate
   http.post('/api/candidates/:candidateId/notes', async ({ params, request }) => {
     const candidateId = Number(params.candidateId);
     const { noteText } = (await request.json()) as { noteText: string };
@@ -60,4 +60,27 @@ export const candidateHandlers = [
 
     return Response.json(candidate);
   }),
+
+  // Handler to delete a note from a candidate
+  http.delete('/api/candidates/:candidateId/notes/:noteId', async ({ params }) => {
+    const candidateId = Number(params.candidateId);
+    const noteId = Number(params.noteId);
+
+    const candidate = await db.candidates.get(candidateId);
+
+    if (!candidate) {
+      return new Response('Candidate not found', { status: 404 });
+    }
+
+    const updatedNotes = (candidate.notes || []).filter(note => note.noteId !== noteId);
+    
+    // Update the candidate in the database with the modified notes array
+    await db.candidates.update(candidateId, { notes: updatedNotes });
+    
+    // Fetch the fully updated candidate to return in the response
+    const updatedCandidate = await db.candidates.get(candidateId);
+
+    return Response.json(updatedCandidate);
+  }),
 ];
+

@@ -17,7 +17,7 @@ export async function getCandidateById(candidateId: number): Promise<Candidate |
   if (!response.ok) {
     throw new Error('Failed to fetch candidate');
   }
- 
+
   if (response.status === 204) return null;
   return response.json();
 }
@@ -51,3 +51,17 @@ export async function addNoteToCandidate(candidateId: number, noteText: string):
     }
     return response.json();
 }
+
+/**
+ * Deletes a note from a specific candidate's profile.
+ */
+export async function deleteNoteFromCandidate(candidateId: number, noteId: number): Promise<Candidate> {
+  const response = await fetch(`/api/candidates/${candidateId}/notes/${noteId}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete note');
+  }
+  return response.json();
+}
+

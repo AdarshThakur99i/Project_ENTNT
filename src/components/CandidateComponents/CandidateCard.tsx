@@ -24,43 +24,45 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, isDragOverlay 
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition || 'transform 250ms ease',
   };
 
   const cardContent = (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between w-full">
       <div>
         <p className="font-semibold text-gray-800">{candidate.name}</p>
         <p className="text-sm text-gray-500">{candidate.email}</p>
       </div>
       {!isDragOverlay && (
         <div
-          className="drag-handle cursor-grab active:cursor-grabbing p-2"
+          className="drag-handle cursor-grab active:cursor-grabbing p-2 text-gray-400 hover:text-gray-600"
           {...listeners}
           {...attributes}
         >
-          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zM6 5v.01M6 12v.01M6 19v.01M6 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zM18 5v.01M18 12v.01M18 19v.01M18 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
           </svg>
         </div>
       )}
     </div>
   );
 
+  const cardClasses = `bg-white border rounded-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 ${
+    isDragging ? 'opacity-50 shadow-lg' : ''
+  } ${isDragOverlay ? 'rotate-2 shadow-xl cursor-grabbing' : ''}`;
+
   return (
     <div
       ref={!isDragOverlay ? setNodeRef : undefined}
-      style={!isDragOverlay ? style : undefined}
-      className={`p-4 bg-white border rounded-lg shadow-sm mb-2 hover:shadow-md transition-shadow ${
-        isDragging ? 'opacity-50' : ''
-      } ${isDragOverlay ? 'rotate-3 shadow-lg cursor-grabbing' : ''}`}
+      style={style}
+      className={cardClasses}
     >
       {isDragOverlay ? (
-        cardContent
+        <div className="p-3 flex">{cardContent}</div>
       ) : (
         <Link
           to={`/jobs/${candidate.jobId}/candidates/${candidate.id}`}
-          className="block no-underline text-current"
+          className="block no-underline text-current p-3"
         >
           {cardContent}
         </Link>
@@ -70,3 +72,4 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, isDragOverlay 
 };
 
 export default CandidateCard;
+

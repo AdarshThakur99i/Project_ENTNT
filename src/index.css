@@ -1,6 +1,16 @@
 @import "tailwindcss";
+* {
+  transition: all 0.2s ease-in-out;
+}
 
-/* Your custom global styles */
+button, 
+.transition,
+[class*="hover:"],
+[class*="focus:"] {
+  transition: all 0.2s ease-in-out;
+}
+
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -43,14 +53,14 @@ button {
   font-weight: 500;
   font-family: inherit;
   /* background-color: blue; */
-  color: white;
+ 
   cursor: pointer;
-  transition: background-color 0.25s, border-color 0.25s; */
+  transition: background-color 0.25s, border-color 0.25s; 
 }
 
 button:hover {
-  border-color: #646cff;
-  background-color: #333;
+
+  
 }
 
 button:focus,

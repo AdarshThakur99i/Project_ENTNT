@@ -57,11 +57,19 @@ const CandidatesList: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
+    
+      <div className="mb-6">
+          <Link to={`/jobs/${jobId}`} className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+              Back to Job Details
+          </Link>
+      </div>
+
       <div className="border-b border-gray-200 pb-5 mb-8">
           <div className="flex justify-between items-center flex-wrap gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Candidate Pipeline</h1>
-                <p className="text-gray-600 mt-1">Track and manage candidates for this job.</p>
+                <p className="text-gray-600 mt-1">Track and manage candidates for this job. Click any profile for candidate's info.</p>
               </div>
               <Link to={`/jobs/${jobId}/candidates/kanbanview`} className="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all text-sm">
                 <svg className="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
@@ -99,7 +107,10 @@ const CandidatesList: React.FC = () => {
 
       <div className="border rounded-lg shadow-sm h-[70vh] bg-white overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500">Loading candidates...</div>
+           <div className="animate-pulse">
+    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+  Loading candidates...</div>
         ) : searchedCandidates && searchedCandidates.length > 0 ? (
           <List
             height={window.innerHeight * 0.7}

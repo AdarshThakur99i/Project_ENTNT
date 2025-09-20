@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchAssessmentsForJob } from '../../api/JobsApi/AssessmentApi';
+import { fetchAssessmentById } from '../../api/JobsApi/AssessmentApi';
 import type { Assessment, Section, Question, QuestionDetails } from '../../data/AssessmentFunctions/assessment';
-
 
 const PreviewSingleChoice: React.FC<{ question: Question }> = ({ question }) => {
     if (question.details.type !== 'single-choice') return null;
@@ -35,20 +34,13 @@ const PreviewMultiChoice: React.FC<{ question: Question }> = ({ question }) => {
 const PreviewQuestion: React.FC<{ question: Question }> = ({ question }) => {
     const renderQuestionDetails = (details: QuestionDetails) => {
         switch (details.type) {
-            case 'single-choice':
-                return <PreviewSingleChoice question={question} />;
-            case 'multi-choice':
-                return <PreviewMultiChoice question={question} />;
-            case 'short-text':
-                return <input type="text" disabled className="w-full p-2 border rounded-md bg-gray-100" />;
-            case 'long-text':
-                return <textarea disabled className="w-full p-2 border rounded-md bg-gray-100" rows={4} />;
-            case 'numeric':
-                return <input type="number" disabled className="w-full p-2 border rounded-md bg-gray-100" />;
-            case 'file-upload':
-                return <input type="file" disabled className="w-full p-2 border rounded-md bg-gray-100" />;
-            default:
-                return null;
+            case 'single-choice': return <PreviewSingleChoice question={question} />;
+            case 'multi-choice': return <PreviewMultiChoice question={question} />;
+            case 'short-text': return <input type="text" disabled className="w-full p-2 border rounded-md bg-gray-100" />;
+            case 'long-text': return <textarea disabled className="w-full p-2 border rounded-md bg-gray-100" rows={4} />;
+            case 'numeric': return <input type="number" disabled className="w-full p-2 border rounded-md bg-gray-100" />;
+            case 'file-upload': return <input type="file" disabled className="w-full p-2 border rounded-md bg-gray-100" />;
+            default: return null;
         }
     };
 
@@ -63,25 +55,23 @@ const PreviewQuestion: React.FC<{ question: Question }> = ({ question }) => {
     );
 };
 
-
 interface AssessmentPreviewProps {
     assessment?: Assessment | null;
 }
 
 const AssessmentPreview: React.FC<AssessmentPreviewProps> = ({ assessment: assessmentFromProp }) => {
-    const { jobId } = useParams<{ jobId: string }>();
+    const { jobId, assessmentId } = useParams<{ jobId: string; assessmentId: string }>();
     const [internalAssessment, setInternalAssessment] = useState<Assessment | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        //  Only fetch data if no prop is provided (meaning it's a standalone page)
-        if (assessmentFromProp === undefined && jobId) {
+        if (assessmentFromProp === undefined && assessmentId) {
             const loadAssessment = async () => {
                 setIsLoading(true);
                 try {
-                    const assessments = await fetchAssessmentsForJob(parseInt(jobId, 10));
-                    // Show the first assessment found for the job
-                    setInternalAssessment(assessments.length > 0 ? assessments[0] : null);
+                    // Fetch the specific assessment using its ID
+                    const assessment = await fetchAssessmentById(parseInt(assessmentId, 10));
+                    setInternalAssessment(assessment);
                 } catch (error) {
                     console.error("Failed to load assessment for preview:", error);
                     setInternalAssessment(null);
@@ -91,12 +81,10 @@ const AssessmentPreview: React.FC<AssessmentPreviewProps> = ({ assessment: asses
             };
             loadAssessment();
         } else {
-            // If a prop is passed, it's not in a loading state.
             setIsLoading(false);
         }
-    }, [jobId, assessmentFromProp]); // Depend on the prop to prevent re-fetching
+    }, [assessmentId, assessmentFromProp]);
 
-    // Decide which assessment data to use: the prop (for live preview) or the fetched state (for standalone page)
     const assessment = assessmentFromProp !== undefined ? assessmentFromProp : internalAssessment;
     const isStandalonePage = assessmentFromProp === undefined;
 
@@ -105,17 +93,15 @@ const AssessmentPreview: React.FC<AssessmentPreviewProps> = ({ assessment: asses
     }
 
     if (!assessment) {
-        // Show a more helpful message on the standalone page if no assessment exists
         if (isStandalonePage) {
             return (
                 <div className="p-8 max-w-3xl mx-auto text-center">
-                    <h2 className="text-2xl font-bold mb-4">No Assessment Found</h2>
-                    <p className="text-gray-600 mb-6">There is no assessment configured for this job.</p>
-                    <Link to={`/jobs/${jobId}`} className="text-blue-500 hover:underline">&larr; Back to Job Details</Link>
+                    <h2 className="text-2xl font-bold mb-4">Assessment Not Found</h2>
+                    <p className="text-gray-600 mb-6">This assessment could not be found.</p>
+                    <Link to={`/jobs/${jobId}/assessment-builder`} className="text-blue-500 hover:underline">&larr; Back to Assessments List</Link>
                 </div>
             );
         }
-        // Show a simple message when embedded in the builder
         return <div className="p-6 bg-gray-50 rounded-lg">No assessment data to preview.</div>;
     }
 
@@ -133,13 +119,12 @@ const AssessmentPreview: React.FC<AssessmentPreviewProps> = ({ assessment: asses
         </>
     );
 
-    // Render a full page layout if standalone, or a simple div if embedded
     if (isStandalonePage) {
         return (
             <div className="min-h-screen bg-gray-50 p-8">
                 <div className="max-w-3xl mx-auto">
                     <div className="mb-6">
-                        <Link to={`/jobs/${jobId}`} className="text-blue-500 hover:underline">&larr; Back to Job Details</Link>
+                        <Link to={`/jobs/${jobId}/assessment-builder`} className="text-blue-500 hover:underline">&larr; Back to Assessments List</Link>
                     </div>
                     <div className="p-8 bg-white rounded-lg border shadow-md">
                         {previewBody}
@@ -149,7 +134,6 @@ const AssessmentPreview: React.FC<AssessmentPreviewProps> = ({ assessment: asses
         );
     }
     
-    // This is the return for the embedded preview in the builder
     return (
         <div className="p-6 bg-gray-50 rounded-lg border">
             {previewBody}
@@ -158,4 +142,3 @@ const AssessmentPreview: React.FC<AssessmentPreviewProps> = ({ assessment: asses
 };
 
 export default AssessmentPreview;
-

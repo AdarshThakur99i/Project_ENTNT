@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import {useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import type { Candidate, Note as NoteType } from '../data/CandidatesFunctions/mockCandidates';
 import Note from '../components/CandidateComponents/Note';
 import NoteInput from '../components/CandidateComponents/NoteInput';
 
-import { getCandidateById, addNoteToCandidate, updateCandidate } from '../api/candidatesApi/candidateApi';
+import { getCandidateById, addNoteToCandidate, deleteNoteFromCandidate } from '../api/candidatesApi/candidateApi';
 
 const CandidateProfile: React.FC = () => {
   const { jobId, candidateId } = useParams<{ jobId: string; candidateId: string }>();
@@ -32,24 +32,36 @@ const CandidateProfile: React.FC = () => {
 
   const handleSaveNote = async (noteText: string) => {
     if (!candidate) return;
-    const updatedCandidate = await addNoteToCandidate(candidate.id, noteText);
-    setCandidate(updatedCandidate);
+
+    try {
+      // Call the API and update the state with the returned candidate, which includes the new note.
+      const updatedCandidate = await addNoteToCandidate(candidate.id, noteText);
+      setCandidate(updatedCandidate);
+    } catch (error) {
+      console.error("Failed to save note:", error);
+      alert("Error: Could not save note.");
+    }
   };
 
   const handleDeleteNote = async (noteIdToDelete: number) => {
-      if (!candidate) return;
-      const originalNotes = candidate.notes;
-      const updatedNotes = (originalNotes || []).filter(note => note.noteId !== noteIdToDelete);
-      const updatedCandidate = { ...candidate, notes: updatedNotes };
-      setCandidate(updatedCandidate);
+    if (!candidate) return;
 
-      try {
-          await updateCandidate(updatedCandidate);
-      } catch (error) {
-          console.error("Failed to delete note:", error);
-          setCandidate({ ...candidate, notes: originalNotes });
-          alert("Error: Could not delete note.");
-      }
+    // Store the original state in case we need to roll back
+    const originalCandidate = { ...candidate };
+    
+    // Optimistically remove the note from the UI for a fast response
+    const updatedNotes = (candidate.notes || []).filter(note => note.noteId !== noteIdToDelete);
+    setCandidate({ ...candidate, notes: updatedNotes });
+
+    // Call the API to delete the note from the database
+    try {
+      await deleteNoteFromCandidate(candidate.id, noteIdToDelete);
+    } catch (error) {
+      console.error("Failed to delete note:", error);
+      // If the API call fails, revert the UI to its original state
+      setCandidate(originalCandidate);
+      alert("Error: Could not delete the note.");
+    }
   };
 
   if (isLoading) {
@@ -69,11 +81,10 @@ const CandidateProfile: React.FC = () => {
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
-  
       <div className="flex items-center gap-4 mb-6">
-        <Link to={`/jobs/${jobId}/candidates`} className="text-blue-500 hover:underline">&larr; Back to List</Link>
+        <Link to={`/jobs/${jobId}/candidates`} className="text-blue-600 hover:underline">&larr; Back to List</Link>
         <span className="text-gray-300">|</span>
-        <Link to={`/jobs/${jobId}/candidates/kanbanview`} className="text-blue-500 hover:underline">Back to Kanban Board</Link>
+        <Link to={`/jobs/${jobId}/candidates/kanbanview`} className="text-blue-600 hover:underline">Back to Kanban</Link>
       </div>
 
       <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-12">
@@ -122,7 +133,7 @@ const CandidateProfile: React.FC = () => {
               />
             ))
           ) : (
-            <p className="text-gray-500 italic">No notes yet.</p>
+            <p className="text-gray-500 italic p-4">No notes yet.</p>
           )}
         </div>
       </div>

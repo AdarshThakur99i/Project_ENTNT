@@ -53,7 +53,7 @@ const JobsList: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="max-w-4xl mx-auto px-6 py-2">
    
       <div className="border-b border-gray-200 pb-5 mb-8">
           <div className="flex justify-between items-center flex-wrap gap-4">
@@ -80,7 +80,10 @@ const JobsList: React.FC = () => {
 
       <div className="mt-8">
         {isLoading ? (
-          <div className="text-center p-10 text-gray-500">Loading jobs...</div>
+         <div className="animate-pulse">
+    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+  Loading jobs...</div>
         ) : jobs && jobs.length > 0 ? (
           <>
             <div className="space-y-4">

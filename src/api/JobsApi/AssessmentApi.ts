@@ -1,11 +1,20 @@
+import type { Assessment, AssessmentResponse } from "../../data/AssessmentFunctions/assessment";
 
-import type { Assessment,AssessmentResponse } from "../../data/AssessmentFunctions/assessment";
 export async function fetchAssessmentsForJob(jobId: number): Promise<Assessment[]> {
   const response = await fetch(`/api/jobs/${jobId}/assessments`);
   if (!response.ok) {
     throw new Error('Failed to fetch assessments');
   }
   return response.json();
+}
+
+export async function fetchAssessmentById(assessmentId: number): Promise<Assessment | null> {
+    const response = await fetch(`/api/assessments/${assessmentId}`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch assessment');
+    }
+    if (response.status === 204) return null; // Handle "Not Found" case
+    return response.json();
 }
 
 export async function createAssessment(jobId: number, assessmentData: Omit<Assessment, 'id'>): Promise<Assessment> {
@@ -19,11 +28,11 @@ export async function createAssessment(jobId: number, assessmentData: Omit<Asses
   }
   return response.json();
 }
+
 export async function deleteAssessment(assessmentId: number): Promise<void> {
   const response = await fetch(`/api/assessments/${assessmentId}`, {
     method: 'DELETE',
   });
-
   if (!response.ok) {
     throw new Error('Failed to delete assessment');
   }
@@ -40,6 +49,7 @@ export async function saveAssessmentResponse(responseData: Omit<AssessmentRespon
   }
   return response.json();
 }
+
 export async function updateAssessment(assessment: Assessment): Promise<Assessment> {
   const response = await fetch(`/api/assessments/${assessment.id}`, {
     method: 'PUT',
