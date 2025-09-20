@@ -7,144 +7,104 @@ const JOBS_PER_PAGE = 5;
 
 export const useJobs = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [allTags, setAllTags] = useState<string[]>([]); 
-  const [isLoading, setIsLoading] = useState(true);
- const [currentPage, setCurrentPage] = useState<number>(1);
-const [totalPages, setTotalPages] = useState<number>(0);
-  
+  const [allTags, setAllTags] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);     
+  const [totalPages, setTotalPages] = useState<number>(0);       
 
-type JobFilters = {
-  search: string;
-  status: string;
-  tags: string[];
-};
+  type JobFilters = {
+    search: string;
+    status: string;
+    tags: string[];
+  };
+  const [filters, setFilters] = useState<JobFilters>({
+    search: '',
+    status: 'all',
+    tags: [],
+  });
 
-const [filters, setFilters] = useState<JobFilters>({
-  search: '',
-  status: 'all',
-  tags: [],
-});
-
- 
-  const refetchTags = async () => { 
-    const tagsResponse = await jobsApi.fetchTags();
-    setAllTags(tagsResponse);
+  const refetchTags = async () => {
+    const tags = await jobsApi.fetchTags();
+    setAllTags(tags);
   };
 
   useEffect(() => {
     const getJobsAndTags = async () => {
       setIsLoading(true);
       try {
-        const [jobsResponse, tagsResponse]: [{ data: Job[]; totalCount: number }, string[]] = await Promise.all([
-          jobsApi.fetchJobs({ page: currentPage, pageSize: JOBS_PER_PAGE, ...filters }),
-          jobsApi.fetchTags()
+        // currentPage is always a number now
+        const [jobsResponse, tagsResponse] = await Promise.all([
+          jobsApi.fetchJobs({
+            page: currentPage,
+            pageSize: JOBS_PER_PAGE,
+            ...filters,
+          }),
+          jobsApi.fetchTags(),
         ]);
-        
+
         setJobs(jobsResponse.data);
         setTotalPages(Math.ceil(jobsResponse.totalCount / JOBS_PER_PAGE));
         setAllTags(tagsResponse);
-      } catch (error) {
-        console.error("Failed to fetch jobs or tags:", error);
+      } catch (err) {
+        console.error('Failed to fetch jobs or tags:', err);
         setJobs([]);
         setTotalPages(0);
       } finally {
         setIsLoading(false);
       }
     };
+
     getJobsAndTags();
   }, [currentPage, filters]);
 
   const refetchJobs = async () => {
     setIsLoading(true);
-    const pageNumber = currentPage ?? 1;
     try {
-      const response: { data: Job[]; totalCount: number } = 
-await jobsApi.fetchJobs({
-  page: pageNumber,
-  pageSize: JOBS_PER_PAGE,
-  ...filters,
-});
-      setJobs(response.data);
-      setTotalPages(Math.ceil(response.totalCount / JOBS_PER_PAGE));
-    } catch (error) {
-      console.error("Failed to refetch jobs:", error);
+      const resp = await jobsApi.fetchJobs({
+        page: currentPage,
+        pageSize: JOBS_PER_PAGE,
+        ...filters,
+      });
+      setJobs(resp.data);
+      setTotalPages(Math.ceil(resp.totalCount / JOBS_PER_PAGE));
+    } catch (err) {
+      console.error('Failed to refetch jobs:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // This function correctly expects all properties of a Job except 'id'.
   const handleCreateJob = async (formData: Omit<Job, 'id'>) => {
     try {
       await jobsApi.createJob(formData);
-      refetchJobs(); 
-      refetchTags(); 
-      alert("Job created successfully!");
-    } catch (error) {
-      alert("Error: Could not create the job.");
+      refetchJobs();
+      refetchTags();
+      alert('Job created successfully!');
+    } catch {
+      alert('Error: Could not create the job.');
     }
   };
-  
-  // This function correctly expects a complete Job object, including the 'id'.
+
   const handleUpdateJob = async (formData: Job) => {
     try {
       await jobsApi.updateJob(formData.id, formData);
-      alert("Job updated successfully!");
+      alert('Job updated successfully!');
       refetchJobs();
       refetchTags();
-    } catch (error) {
-      alert("Error: Could not update the job.");
+    } catch {
+      alert('Error: Could not update the job.');
     }
   };
 
   const handleFilterChange = <K extends keyof JobFilters>(
-  filterName: K,
-  value: JobFilters[K]
-) => {
-  setFilters(prev => ({
-    ...prev,
-    [filterName]: value,
-  } as JobFilters));
-
-  setCurrentPage(1);
-};
-  const handleReorderJobs = async (reorderedJobs: Job[]) => {
-    const originalJobs = [...jobs];
-    setJobs(reorderedJobs); 
-    
-    try {
-   
-      const jobsToSave = reorderedJobs.map((job, index) => ({...job, order: index}));
-      await jobsApi.saveJobOrder(jobsToSave);
-    } catch (error) {
-      console.error("Reorder failed:", error);
-      alert("Error: Could not save the new job order. Reverting changes(intentional 5% error to check rollback features).");
-      setJobs(originalJobs);
-    }
-  };
-
-  const { 
-    handleDragStart, 
-    handleDragEnter, 
-    handleDragOver, 
-    handleDrop 
-  } = useDragAndDrop(jobs, handleReorderJobs);
-
-  const handleArchive = async (id: number, currentStatus: string) => {
-    const originalJobs = [...jobs];
-    const newStatus = currentStatus === 'active' ? 'archived' : 'active';
-
-    const updatedJobs = jobs.map(job => 
-      job.id === id ? { ...job, status: newStatus } : job
-    );
-    setJobs(updatedJobs);
-
-    try {
-      await jobsApi.patchJob(id, { status: newStatus });
-    } catch (error) {
-      alert("Error: Could not update job status. Reverting changes.");
-      setJobs(originalJobs);
-    }
+    filterName: K,
+    value: JobFilters[K]
+  ) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: value,
+    } as JobFilters)); // assert full shape
+    setCurrentPage(1);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -152,12 +112,55 @@ await jobsApi.fetchJobs({
       setCurrentPage(newPage);
     }
   };
+  const handleReorderJobs = async (reordered: Job[]) => {
+    const backup = [...jobs];
+    setJobs(reordered);
+
+    try {
+      const toSave = reordered.map((job, idx) => ({ ...job, order: idx }));
+      await jobsApi.saveJobOrder(toSave);
+    } catch {
+      console.error('Reorder failed');
+      setJobs(backup);
+      alert('Error saving new job order; reverting changes.');
+    }
+  };
+
+  const { handleDragStart, handleDragEnter, handleDragOver, handleDrop } =
+    useDragAndDrop(jobs, handleReorderJobs);
+
+  const handleArchive = async (id: number, currentStatus: Job['status']) => {
+    const backup = [...jobs];
+    const newStatus = (currentStatus === 'active' ? 'archived' : 'active') as Job['status'];
+
+    const updated = jobs.map(job =>
+      job.id === id ? { ...job, status: newStatus } : job
+    );
+    setJobs(updated);
+
+    try {
+      await jobsApi.patchJob(id, { status: newStatus });
+    } catch {
+      setJobs(backup);
+      alert('Error: Could not update job status. Reverting changes.');
+    }
+  };
 
   return {
-    jobs, isLoading, currentPage, totalPages, filters, allTags,
-    handleFilterChange, handleArchive, handlePageChange,
-    handleCreateJob, handleUpdateJob,
-    handleDragStart, handleDragEnter, handleDragOver, handleDrop,
+    jobs,
+    isLoading,
+    currentPage,
+    totalPages,
+    filters,
+    allTags,
+    handleFilterChange,
+    handlePageChange,
+    handleCreateJob,
+    handleUpdateJob,
+    handleArchive,
+    handleDragStart,
+    handleDragEnter,
+    handleDragOver,
+    handleDrop,
   };
 };
-

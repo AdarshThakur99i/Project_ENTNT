@@ -1,6 +1,6 @@
 export const TAG_POOL = ['React', 'TypeScript', 'Node.js', 'Remote', 'Full-time', 'GraphQL', 'CSS', 'Senior'];
 
-export type JobStatus = 'active' | 'archived';
+export type JobStatus = 'active' | 'archived' | 'inactive';
 
 export interface Job {
   id: number;

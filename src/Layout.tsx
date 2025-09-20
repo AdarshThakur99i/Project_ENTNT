@@ -4,7 +4,6 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 const Layout: React.FC = () => {
   const location = useLocation();
 
-  const showAllJobsButton = location.pathname !== '/jobs/jobsList';
 
   return (
     <div className="min-h-screen bg-gray-50">
