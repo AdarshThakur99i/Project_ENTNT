@@ -1,112 +1,133 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import type { Section } from '../data/AssessmentFunctions/assessment';
 import SectionEditor from '../components/AssessmentComponents/SectionEditor';
 import AssessmentPreview from '../components/AssessmentComponents/AssessmentPreview';
 import { useAssessmentBuilder } from '../hooks/AssessmentHooks/useAssessmentBuilder';
 
+// A helper component for the save button to show different states
+const SaveButton: React.FC<{ status: 'idle' | 'saving' | 'saved' | 'error'; isDirty: boolean; onClick: () => void; }> = ({ status, isDirty, onClick }) => {
+  const baseClasses = "px-5 py-2 text-white font-semibold rounded-lg transition-colors duration-200";
+  const disabledClasses = "disabled:bg-gray-400 disabled:cursor-not-allowed";
+
+  switch (status) {
+    case 'saving':
+      return <button className={`${baseClasses} bg-yellow-500`} disabled>Saving...</button>;
+    case 'saved':
+      return <button className={`${baseClasses} bg-green-500`} disabled>Saved!</button>;
+    case 'error':
+      return <button className={`${baseClasses} bg-red-500`} onClick={onClick}>Save Error</button>;
+    default:
+      return (
+        <button 
+          onClick={onClick} 
+          disabled={!isDirty} 
+          className={`${baseClasses} bg-blue-600 hover:bg-blue-700 ${disabledClasses}`}
+        >
+          Save Changes
+        </button>
+      );
+  }
+};
+
+
 const AssessmentBuilder: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
+  
+  // Destructuring the return values from the updated custom hook
   const { 
-    assessment, 
-    setAssessment, 
+    activeAssessment,
+    updateActiveAssessment,
     isLoading, 
-    isDirty, 
-    saveChanges, 
-    showConfirmation 
+    isDirty,
+    saveStatus,
+    handleSaveChanges,
   } = useAssessmentBuilder(jobId);
 
+  // Handlers now update the single 'activeAssessment' via the 'updateActiveAssessment' function from the hook
   const handleAddSection = () => {
-    if (!setAssessment || !assessment) return;
+    if (!activeAssessment) return;
     const newSection: Section = { id: `sec-${Date.now()}`, title: 'New Section', questions: [] };
-    setAssessment({ ...assessment, sections: [...assessment.sections, newSection] });
+    const updated = { ...activeAssessment, sections: [...activeAssessment.sections, newSection] };
+    updateActiveAssessment(updated);
   };
 
   const handleUpdateSection = (updatedSection: Section) => {
-    if (!setAssessment || !assessment) return;
-    setAssessment({
-      ...assessment,
-      sections: assessment.sections.map(s => s.id === updatedSection.id ? updatedSection : s),
-    });
+    if (!activeAssessment) return;
+    const updated = {
+      ...activeAssessment,
+      sections: activeAssessment.sections.map(s => s.id === updatedSection.id ? updatedSection : s),
+    };
+    updateActiveAssessment(updated);
   };
 
   const handleDeleteSection = (sectionIdToDelete: string) => {
-    if (!setAssessment || !assessment) return;
-    setAssessment({
-      ...assessment,
-      sections: assessment.sections.filter(s => s.id !== sectionIdToDelete),
-    });
+    if (!activeAssessment) return;
+    const updated = {
+      ...activeAssessment,
+      sections: activeAssessment.sections.filter(s => s.id !== sectionIdToDelete),
+    };
+    updateActiveAssessment(updated);
   };
 
   const handleTitleChange = (newTitle: string) => {
-    if (!setAssessment || !assessment) return;
-    setAssessment({ ...assessment, title: newTitle });
+    if (!activeAssessment) return;
+    const updated = { ...activeAssessment, title: newTitle };
+    updateActiveAssessment(updated);
   };
 
   if (isLoading) {
-    return <div className="p-8 text-center text-gray-500">Loading Assessment...</div>;
+    return <div className="p-8 text-center text-gray-500">Loading Assessment Builder...</div>;
+  }
+  
+  if (!activeAssessment) {
+      return <div className="p-8 text-center text-red-500">Could not load or create an assessment.</div>;
   }
 
-  if (!assessment) {
-    return <div className="p-8 text-center text-red-500">Error: Could not load assessment. Invalid Job ID.</div>;
-  }
-
-  // Get a flat list of all questions to pass down for conditional logic
-  const allQuestions = assessment.sections.flatMap(s => s.questions);
+  // Flatten all questions from all sections to pass down for conditional logic checks
+  const allQuestions = activeAssessment.sections.flatMap(s => s.questions);
 
   return (
-    <div className="flex h-screen bg-gray-100 relative">
+    <div className="flex h-screen bg-gray-100">
+      {/* Editor Panel */}
       <div className="w-1/2 p-8 overflow-y-auto">
+        <Link to={`/jobs/${jobId}`} className="text-blue-500 mb-4 inline-block">&larr; Back to Job Details</Link>
         <div className="flex justify-between items-center mb-2">
-          <h1 className="text-3xl font-bold">Assessment Builder</h1>
-          <div className="flex items-center gap-4">
-            {isDirty && <span className="text-sm text-yellow-600 italic">Unsaved changes</span>}
-            <button
-              onClick={saveChanges}
-              disabled={!isDirty}
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              Save Assessment
-            </button>
-          </div>
+          <h1 className="text-3xl font-bold">Assessment Editor</h1>
+          <SaveButton status={saveStatus} isDirty={isDirty} onClick={handleSaveChanges} />
         </div>
         <input
           type="text"
-          value={assessment.title}
+          value={activeAssessment.title}
           onChange={(e) => handleTitleChange(e.target.value)}
-          className="text-2xl font-semibold text-gray-700 bg-transparent border-b-2 w-full p-2 mb-8 focus:outline-none focus:border-blue-500"
           placeholder="Assessment Title"
+          className="text-2xl font-semibold w-full p-2 mb-8 bg-transparent border-b-2 focus:outline-none focus:border-blue-500"
         />
         <div className="space-y-6">
-          {assessment.sections.map((section) => (
-            <SectionEditor
-              key={section.id}
-              section={section}
+          {activeAssessment.sections.map((section) => (
+            <SectionEditor 
+              key={section.id} 
+              section={section} 
               allQuestions={allQuestions} 
-              updateSection={handleUpdateSection}
-              deleteSection={() => handleDeleteSection(section.id)}
+              updateSection={handleUpdateSection} 
+              deleteSection={() => handleDeleteSection(section.id)} 
             />
           ))}
         </div>
-        <button
-          onClick={handleAddSection}
-          className="mt-8 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-        >
+        <button onClick={handleAddSection} className="mt-8 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
           + Add Section
         </button>
       </div>
-
+      
+      {/* Preview Panel */}
       <div className="w-1/2 p-8 bg-white border-l overflow-y-auto">
-        <AssessmentPreview assessment={assessment} />
+        <h2 className="text-xl font-bold mb-4">Live Preview</h2>
+        {/* Pass the active (in-memory) assessment to the preview component */}
+        <AssessmentPreview assessment={activeAssessment} />
       </div>
-
-      {showConfirmation && (
-        <div className="absolute top-6 right-6 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transition-opacity duration-300">
-          Assessment Saved!
-        </div>
-      )}
     </div>
   );
 };
 
 export default AssessmentBuilder;
+

@@ -4,9 +4,6 @@ import type { Job } from '../../data/JobsData/Jobs.types';
 
 const TAG_POOL = ['React', 'TypeScript', 'Node.js', 'Remote', 'Full-time', 'GraphQL', 'CSS', 'Senior', 'JavaScript', 'Mid-Level', 'Contract'];
 
-/**
- * Generates an array of 25 random job objects.
- */
 function generateRandomJobs(): Omit<Job, 'id'>[] {
   const jobs: Omit<Job, 'id'>[] = [];
   const titles = ['Software Engineer', 'Frontend Developer', 'Backend Engineer', 'Full-Stack Developer', 'DevOps Specialist'];

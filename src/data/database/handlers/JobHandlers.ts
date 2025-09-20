@@ -1,7 +1,7 @@
 import { http } from 'msw';
 import { db } from '../db';
 import type { Job } from '../../../data/JobsData/Jobs.types';
-
+import type { Assessment } from '../../AssessmentFunctions/assessment';
 export const jobsHandlers = [
   http.get('/api/jobs', async ({ request }) => {
     const url = new URL(request.url);
@@ -112,5 +112,17 @@ export const jobsHandlers = [
     const jobId = Number(params.id);
     await db.jobs.delete(jobId);
     return new Response(null, { status: 204 });
+  }),
+  //assessment logic.
+    http.get('/api/jobs/:jobId/assessments', async ({ params }) => {
+    const jobId = Number(params.jobId);
+    const assessments = await db.assessments.where('jobId').equals(jobId).toArray();
+    return Response.json(assessments);
+  }),
+   http.post('/api/jobs/:jobId/assessments', async ({ request }) => {
+    const assessmentData = await request.json() as Omit<Assessment, 'id'>;
+    const newId = await db.assessments.add(assessmentData);
+    const newAssessment = await db.assessments.get(newId);
+    return Response.json(newAssessment, { status: 201 });
   }),
 ];

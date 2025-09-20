@@ -50,6 +50,7 @@ const JobDetails: React.FC = () => {
   if (!job) {
     return <div className="p-8 text-center">Job not found.</div>;
   }
+// ... imports and component logic above
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
@@ -57,16 +58,31 @@ const JobDetails: React.FC = () => {
       
       <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-8">
         <h1 className="text-4xl font-bold">{job.title}</h1>
-       
       </div>
 
+      {/* --- MODIFIED ASSESSMENT CARD --- */}
       <div className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Assessment</h2>
-        <Link to={`/jobs/${jobId}/assessment-builder`} className="block p-6 bg-white border rounded-lg hover:shadow-md">
-       
-        </Link>
+        <div className="block p-6 bg-white border rounded-lg">
+          <p className="text-gray-600 mb-4">Manage or preview the assessment for this role.</p>
+          <div className="flex items-center gap-4">
+            <Link 
+              to={`/jobs/${jobId}/assessment-builder`} 
+              className="px-4 py-2  bg-gray-200 text-gray-800 font-semibold rounded-lg  hover:bg-gray-300 transition-colors"
+            >
+              Edit Assessment
+            </Link>
+            <Link 
+              to={`/jobs/${jobId}/assessment-preview`} // Assuming this is the route for your AssessmentPreview component
+              className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
+            >
+              Preview
+            </Link>
+          </div>
+        </div>
       </div>
 
+      {/* Danger Zone section remains the same */}
       <div className="mt-12 p-4 border-t border-dashed border-red-300">
         <h3 className="text-lg font-semibold text-red-700">Danger Zone</h3>
         <div className="mt-2 flex justify-between items-center">
@@ -82,5 +98,7 @@ const JobDetails: React.FC = () => {
     </div>
   );
 };
+
+
 
 export default JobDetails;
