@@ -1,8 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import type { Question, QuestionDetails } from '../../data/AssessmentFunctions/assessment';
 
-// --- Helper Component ---
-// Moved CorrectAnswerEditor outside to be its own component. This is the main fix for the input bug.
 const CorrectAnswerEditor: React.FC<{
   question: Question;
   handleCorrectAnswerChange: (answer: any) => void;

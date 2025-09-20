@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { Job } from '../data/JobsData/Jobs.types';
 import { useJobs } from '../hooks/JobsHooks/useJobs';
 import JobItem from '../components/JobComponents/JobItem';
 import Pagination from '../components/pagination';
@@ -25,15 +26,14 @@ const JobsList: React.FC = () => {
   } = useJobs();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingJob, setEditingJob] = useState(null);
+  const [editingJob, setEditingJob] = useState<Job | null>(null);
 
   const handleOpenCreateModal = () => {
     setEditingJob(null);
     setIsModalOpen(true);
   };
 
-  const handleOpenEditModal = (job: any) => {
-    console.log("Setting job for editing:", job);
+  const handleOpenEditModal = (job: Job) => {
     setEditingJob(job);
     setIsModalOpen(true);
   };
@@ -43,14 +43,13 @@ const JobsList: React.FC = () => {
     setEditingJob(null);
   };
 
-  const handleFormSubmit = (formData: any) => {
-    if (formData.id) {
-      console.log("UPDATING JOB:", formData);
+  const handleFormSubmit = (formData: Job | Omit<Job, 'id'>) => {
+    if ('id' in formData) {
       handleUpdateJob(formData);
     } else {
-      console.log("CREATING JOB:", formData);
       handleCreateJob(formData);
     }
+    handleCloseModal();
   };
 
   return (
@@ -67,14 +66,14 @@ const JobsList: React.FC = () => {
       </div>
       
       <JobFilters 
-        filters={filters}
-        allTags={allTags}
+        filters={filters || { search: '', status: 'all', tags: [] }}
+        allTags={allTags || []}
         onFilterChange={handleFilterChange}
       />
 
       {isLoading ? (
         <div className="text-center p-10">Loading jobs...</div>
-      ) : jobs.length > 0 ? (
+      ) : jobs && jobs.length > 0 ? (
         <>
           {jobs.map((job, index) => (
             <JobItem
@@ -91,8 +90,8 @@ const JobsList: React.FC = () => {
             />
           ))}
           <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
+            currentPage={currentPage || 1}
+            totalPages={totalPages || 0}
             isLoading={isLoading}
             onPageChange={handlePageChange}
           />
@@ -106,10 +105,11 @@ const JobsList: React.FC = () => {
         onClose={handleCloseModal}
         onSubmit={handleFormSubmit}
         initialData={editingJob}
-        allTags={allTags}
+        allTags={allTags || []}
       />
     </div>
   );
 };
 
 export default JobsList;
+

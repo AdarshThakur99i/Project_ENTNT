@@ -1,52 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useCandidates } from '../hooks/CandidatesHook/useCandidates';
 import type { Candidate, Note as NoteType } from '../data/CandidatesFunctions/mockCandidates';
 import Note from '../components/CandidateComponents/Note';
 import NoteInput from '../components/CandidateComponents/NoteInput';
 
+import { getCandidateById, addNoteToCandidate, updateCandidate } from '../api/candidatesApi/candidateApi';
+
 const CandidateProfile: React.FC = () => {
-  const { candidateId } = useParams<{ candidateId: string }>();
-  const { searchedCandidates, setAllCandidates, isLoading } = useCandidates();
+  const { jobId, candidateId } = useParams<{ jobId: string; candidateId: string }>();
 
   const [candidate, setCandidate] = useState<Candidate | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    
-    if (!isLoading) {
-      const currentCandidate = searchedCandidates.find(c => c.id === parseInt(candidateId || ''));
-      setCandidate(currentCandidate || null);
+    if (candidateId) {
+      const loadCandidate = async () => {
+        setIsLoading(true);
+        try {
+          const fetchedCandidate = await getCandidateById(parseInt(candidateId, 10));
+          setCandidate(fetchedCandidate);
+        } catch (error) {
+          console.error("Failed to fetch candidate:", error);
+          setCandidate(null);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      loadCandidate();
     }
-  }, [candidateId, searchedCandidates, isLoading]);
+  }, [candidateId]);
 
-  const handleSaveNote = (noteText: string) => {
-    const newNote: NoteType = {
-      noteId: Date.now(),
-      text: noteText,
-      timestamp: new Date().toISOString(),
-    };
-
-    setAllCandidates(prevCandidates =>
-      prevCandidates.map(c =>
-        c.id === candidate?.id
-          ? { ...c, notes: [newNote, ...(c.notes || [])] }
-          : c
-      )
-    );
+  const handleSaveNote = async (noteText: string) => {
+    if (!candidate) return;
+    const updatedCandidate = await addNoteToCandidate(candidate.id, noteText);
+    setCandidate(updatedCandidate);
   };
 
-  const handleDeleteNote = (noteIdToDelete: number) => {
-    setAllCandidates(prevCandidates =>
-      prevCandidates.map(c => {
-        if (c.id === candidate?.id) {
-          const updatedNotes = (c.notes || []).filter(
-            note => note.noteId !== noteIdToDelete
-          );
-          return { ...c, notes: updatedNotes };
-        }
-        return c;
-      })
-    );
+  const handleDeleteNote = async (noteIdToDelete: number) => {
+      if (!candidate) return;
+      const originalNotes = candidate.notes;
+      const updatedNotes = (originalNotes || []).filter(note => note.noteId !== noteIdToDelete);
+      const updatedCandidate = { ...candidate, notes: updatedNotes };
+      setCandidate(updatedCandidate);
+
+      try {
+          await updateCandidate(updatedCandidate);
+      } catch (error) {
+          console.error("Failed to delete note:", error);
+          setCandidate({ ...candidate, notes: originalNotes });
+          alert("Error: Could not delete note.");
+      }
   };
 
   if (isLoading) {
@@ -57,7 +60,7 @@ const CandidateProfile: React.FC = () => {
     return (
       <div className="p-8 text-center">
         <p className="text-red-500 font-semibold">Candidate not found.</p>
-        <Link to="/candidates/candidatesList" className="text-blue-500 hover:underline mt-4 block">
+        <Link to={`/jobs/${jobId}/candidates`} className="text-blue-500 hover:underline mt-4 block">
           &larr; Back to Candidate List
         </Link>
       </div>
@@ -66,9 +69,13 @@ const CandidateProfile: React.FC = () => {
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
-      <Link to="/candidates/candidatesList" className="text-blue-500 hover:underline mb-6 block">&larr; Back to List</Link>
+  
+      <div className="flex items-center gap-4 mb-6">
+        <Link to={`/jobs/${jobId}/candidates`} className="text-blue-500 hover:underline">&larr; Back to List</Link>
+        <span className="text-gray-300">|</span>
+        <Link to={`/jobs/${jobId}/candidates/kanbanview`} className="text-blue-500 hover:underline">Back to Kanban Board</Link>
+      </div>
 
-     
       <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-12">
         <h1 className="text-4xl font-bold text-gray-900">{candidate.name}</h1>
         <p className="text-lg text-gray-600 mt-2">{candidate.email}</p>
@@ -80,7 +87,6 @@ const CandidateProfile: React.FC = () => {
         </p>
       </div>
 
-    
       <div className="mb-12">
         <h2 className="text-2xl font-semibold mb-8 border-b pb-2">Timeline</h2>
         <div className="relative">
@@ -102,7 +108,6 @@ const CandidateProfile: React.FC = () => {
         </div>
       </div>
       
-    
       <div>
         <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Notes</h2>
         <NoteInput onSave={handleSaveNote} />
@@ -126,3 +131,4 @@ const CandidateProfile: React.FC = () => {
 };
 
 export default CandidateProfile;
+

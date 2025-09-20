@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { fetchAssessmentsForJob } from '../../api/JobsApi/AssessmentApi';
 import type { Assessment, Section, Question, QuestionDetails } from '../../data/AssessmentFunctions/assessment';
 
-// No changes needed for these sub-components
+
 const PreviewSingleChoice: React.FC<{ question: Question }> = ({ question }) => {
     if (question.details.type !== 'single-choice') return null;
     return (
@@ -64,21 +64,17 @@ const PreviewQuestion: React.FC<{ question: Question }> = ({ question }) => {
 };
 
 
-// --- Main AssessmentPreview Component Updated ---
-
-// 1. Define props to accept an optional assessment object
 interface AssessmentPreviewProps {
     assessment?: Assessment | null;
 }
 
 const AssessmentPreview: React.FC<AssessmentPreviewProps> = ({ assessment: assessmentFromProp }) => {
     const { jobId } = useParams<{ jobId: string }>();
-    // 2. Internal state for when it's used as a standalone page
     const [internalAssessment, setInternalAssessment] = useState<Assessment | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // 3. Only fetch data if no prop is provided (meaning it's a standalone page)
+        //  Only fetch data if no prop is provided (meaning it's a standalone page)
         if (assessmentFromProp === undefined && jobId) {
             const loadAssessment = async () => {
                 setIsLoading(true);
@@ -100,7 +96,7 @@ const AssessmentPreview: React.FC<AssessmentPreviewProps> = ({ assessment: asses
         }
     }, [jobId, assessmentFromProp]); // Depend on the prop to prevent re-fetching
 
-    // 4. Decide which assessment data to use: the prop (for live preview) or the fetched state (for standalone page)
+    // Decide which assessment data to use: the prop (for live preview) or the fetched state (for standalone page)
     const assessment = assessmentFromProp !== undefined ? assessmentFromProp : internalAssessment;
     const isStandalonePage = assessmentFromProp === undefined;
 
@@ -123,7 +119,6 @@ const AssessmentPreview: React.FC<AssessmentPreviewProps> = ({ assessment: asses
         return <div className="p-6 bg-gray-50 rounded-lg">No assessment data to preview.</div>;
     }
 
-    // This is the common JSX for rendering the preview content
     const previewBody = (
         <>
             <h2 className="text-2xl font-bold mb-4">{assessment.title}</h2>
@@ -138,7 +133,7 @@ const AssessmentPreview: React.FC<AssessmentPreviewProps> = ({ assessment: asses
         </>
     );
 
-    // 5. Render a full page layout if standalone, or a simple div if embedded
+    // Render a full page layout if standalone, or a simple div if embedded
     if (isStandalonePage) {
         return (
             <div className="min-h-screen bg-gray-50 p-8">

@@ -43,7 +43,7 @@ const AssessmentRuntime: React.FC = () => {
           responses: data,
         });
         alert('Assessment submitted successfully!');
-        // You might want to navigate the user away or show a success screen
+        
       } catch (error) {
           console.error("Failed to submit assessment:", error);
           alert('Error: Could not submit assessment.');
@@ -65,8 +65,6 @@ const AssessmentRuntime: React.FC = () => {
         rules.required = 'This field is required';
     }
     
-    // --- THIS IS THE FIX ---
-    // Render different input types based on `question.details.type`
     const renderInput = () => {
         switch (question.details.type) {
             case 'short-text':

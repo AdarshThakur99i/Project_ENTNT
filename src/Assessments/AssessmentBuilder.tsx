@@ -89,7 +89,7 @@ const AssessmentBuilder: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Editor Panel */}
+     
       <div className="w-1/2 p-8 overflow-y-auto">
         <Link to={`/jobs/${jobId}`} className="text-blue-500 mb-4 inline-block">&larr; Back to Job Details</Link>
         <div className="flex justify-between items-center mb-2">
@@ -119,10 +119,9 @@ const AssessmentBuilder: React.FC = () => {
         </button>
       </div>
       
-      {/* Preview Panel */}
+    
       <div className="w-1/2 p-8 bg-white border-l overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Live Preview</h2>
-        {/* Pass the active (in-memory) assessment to the preview component */}
         <AssessmentPreview assessment={activeAssessment} />
       </div>
     </div>

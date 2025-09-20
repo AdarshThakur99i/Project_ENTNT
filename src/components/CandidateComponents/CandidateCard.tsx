@@ -6,8 +6,7 @@ import { Link } from 'react-router-dom';
 
 interface CandidateCardProps {
   candidate: Candidate;
-  id?: string;
-  isDragOverlay?: boolean; 
+  isDragOverlay?: boolean;
 }
 
 const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, isDragOverlay = false }) => {
@@ -18,8 +17,8 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, isDragOverlay 
     transform,
     transition,
     isDragging,
-  } = useSortable({ 
-    id: candidate.id.toString(), 
+  } = useSortable({
+    id: candidate.id.toString(),
     disabled: isDragOverlay,
   });
 
@@ -35,7 +34,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, isDragOverlay 
         <p className="text-sm text-gray-500">{candidate.email}</p>
       </div>
       {!isDragOverlay && (
-        <div 
+        <div
           className="drag-handle cursor-grab active:cursor-grabbing p-2"
           {...listeners}
           {...attributes}
@@ -59,8 +58,8 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, isDragOverlay 
       {isDragOverlay ? (
         cardContent
       ) : (
-        <Link 
-          to={`/candidates/${candidate.id}`} 
+        <Link
+          to={`/jobs/${candidate.jobId}/candidates/${candidate.id}`}
           className="block no-underline text-current"
         >
           {cardContent}
