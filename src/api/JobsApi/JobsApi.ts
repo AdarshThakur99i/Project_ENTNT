@@ -109,7 +109,7 @@ export async function saveJobOrder(reorderedJobs: Job[]): Promise<void> {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to save job order');
+    throw new Error('Failed to save job order(intentional 5% error to check rollback!');
   }
 }
 
@@ -137,33 +137,4 @@ export async function fetchTags(): Promise<string[]> {
   }
   
   return response.json();
-}
-//assessment apis
-export async function fetchAssessmentsForJob(jobId: number): Promise<Assessment[]> {
-  const response = await fetch(`/api/jobs/${jobId}/assessments`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch assessments');
-  }
-  return response.json();
-}
-
-export async function createAssessment(jobId: number, assessmentData: Omit<Assessment, 'id'>): Promise<Assessment> {
-  const response = await fetch(`/api/jobs/${jobId}/assessments`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(assessmentData),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to create assessment');
-  }
-  return response.json();
-}
-export async function deleteAssessment(assessmentId: number): Promise<void> {
-  const response = await fetch(`/api/assessments/${assessmentId}`, {
-    method: 'DELETE',
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to delete assessment');
-  }
 }

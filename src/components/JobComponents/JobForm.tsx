@@ -1,88 +1,70 @@
 import React, { useState, useEffect } from 'react';
+import type { Job } from '../../data/JobsData/Jobs.types';
 
-const JobForm = ({ isOpen, onClose, onSubmit, initialData, allTags }) => {
+interface JobFormProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (formData: Job | Omit<Job, 'id'>) => void;
+    initialData: Job | null;
+    allTags: string[];
+}
+
+const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialData, allTags }) => {
   const [formData, setFormData] = useState({
     title: '',
-    status: 'active',
+    status: 'active' as 'active' | 'archived',
     tags: [] as string[],
   });
 
-  
   useEffect(() => {
-    console.log('JobForm useEffect - initialData:', initialData, 'isOpen:', isOpen);
-    if (initialData) {
-      
-      const newFormData = {
-        ...initialData, 
-        tags: Array.isArray(initialData.tags) ? [...initialData.tags] : []
-      };
-      console.log('Setting form data from initialData:', newFormData);
-      setFormData(newFormData);
-    } else {
-      // Reset to default when creating a new job
-      console.log('Resetting form data to default');
-      setFormData({ title: '', status: 'active', tags: [] });
+    if (isOpen) {
+      if (initialData) {
+        setFormData({
+          ...initialData,
+          tags: Array.isArray(initialData.tags) ? [...initialData.tags] : []
+        });
+      } else {
+        setFormData({ title: '', status: 'active', tags: [] });
+      }
     }
   }, [initialData, isOpen]);
 
   if (!isOpen) return null;
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleTagToggle = (tag: string) => {
-    console.log('=== TAG TOGGLE START ===');
-    console.log('Clicking tag:', tag);
-    console.log('Current formData.tags BEFORE:', formData.tags);
-    console.log('Is array?', Array.isArray(formData.tags));
-    
-    setFormData(prevFormData => {
-      console.log('Inside setFormData - prevFormData.tags:', prevFormData.tags);
-      
-      const currentTags = Array.isArray(prevFormData.tags) ? prevFormData.tags : [];
-      const isCurrentlySelected = currentTags.includes(tag);
-      
-      let newTags;
-      if (isCurrentlySelected) {
-        // Remove the tag
-        newTags = currentTags.filter(t => t !== tag);
-        console.log('Removing tag. New tags:', newTags);
-      } else {
-        // Add the tag
-        newTags = [...currentTags, tag];
-        console.log('Adding tag. New tags:', newTags);
-      }
-      
-      const newFormData = { ...prevFormData, tags: newTags };
-      console.log('Final newFormData:', newFormData);
-      console.log('=== TAG TOGGLE END ===');
-      
-      return newFormData;
+    setFormData(prev => {
+      const currentTags = prev.tags;
+      const newTags = currentTags.includes(tag)
+        ? currentTags.filter(t => t !== tag)
+        : [...currentTags, tag];
+      return { ...prev, tags: newTags };
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('JobForm handleSubmit - formData being submitted:', formData);
-    onSubmit(formData);
-    onClose();
+    onSubmit(initialData ? { ...formData, id: initialData.id } : formData);
   };
 
   const isEditMode = !!initialData;
 
   return (
-   
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
-   
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md z-50">
-        <h2 className="text-2xl font-bold mb-4">{isEditMode ? 'Edit Job' : 'Create New Job'}</h2>
-        
-      
+    <div className="fixed inset-0 bg-black bg-opacity-60 z-40 flex justify-center items-center p-4">
+      <div 
+        className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md z-50 transform transition-all"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center border-b pb-3 mb-4">
+            <h2 className="text-2xl font-bold text-gray-800">{isEditMode ? 'Edit Job' : 'Create New Job'}</h2>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
         
         <form onSubmit={handleSubmit}>
-         
           <div className="mb-4">
             <label htmlFor="title" className="block text-gray-700 font-semibold mb-2">Job Title</label>
             <input
@@ -91,12 +73,11 @@ const JobForm = ({ isOpen, onClose, onSubmit, initialData, allTags }) => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
 
-      
           <div className="mb-4">
             <label htmlFor="status" className="block text-gray-700 font-semibold mb-2">Status</label>
             <select
@@ -104,46 +85,42 @@ const JobForm = ({ isOpen, onClose, onSubmit, initialData, allTags }) => {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="active">Active</option>
               <option value="archived">Archived</option>
             </select>
           </div>
-{/* tag selection */}
+
           <div className="mb-6">
             <label className="block text-gray-700 font-semibold mb-2">Tags</label>
-            <div className="mb-2 text-sm text-gray-600">
-              Selected: {formData.tags.length > 0 ? formData.tags.join(', ') : 'None'}
-            </div>
             <div className="flex flex-wrap gap-2">
               {allTags.map(tag => {
-                const isSelected = Array.isArray(formData.tags) && formData.tags.includes(tag);
-                console.log(`Tag "${tag}" selected:`, isSelected, 'Current tags:', formData.tags);
+                const isSelected = formData.tags.includes(tag);
                 return (
                   <button
                     type="button"
-                    key={`tag-${tag}`}
+                    key={tag}
                     onClick={() => handleTagToggle(tag)}
-                    className={`px-3 py-1 text-sm rounded-full border-2 transition-all duration-200 ${
-                      isSelected 
-                        ? 'bg-blue-500 text-white border-blue-600 shadow-md transform scale-105' 
-                        : 'bg-gray-200 text-gray-700 border-gray-300 hover:bg-gray-300 hover:border-gray-400'
+                    className={`inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full border transition-all duration-200 ${
+                      isSelected
+                        ? 'bg-slate-800 text-white border-slate-800'
+                        : 'bg-teal-400 border-slate-300 hover:bg-slate-50 hover:border-slate-400'
                     }`}
                   >
-                    {tag} {isSelected ? '✓' : ''}
+                    {tag}
+                    {isSelected && <span className="ml-1.5 text-white opacity-75">✓</span>}
                   </button>
                 )
               })}
             </div>
           </div>
           
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-4">
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400">
+          <div className="flex justify-end gap-4 border-t pt-4 mt-6">
+            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-400 text-gray-800 font-semibold rounded-md hover:bg-gray-300 transition-colors">
               Cancel
             </button>
-            <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+            <button type="submit" className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">
               {isEditMode ? 'Save Changes' : 'Create Job'}
             </button>
           </div>
@@ -154,3 +131,4 @@ const JobForm = ({ isOpen, onClose, onSubmit, initialData, allTags }) => {
 };
 
 export default JobForm;
+

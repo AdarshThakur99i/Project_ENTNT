@@ -41,13 +41,11 @@ const KanbanBoard: React.FC = () => {
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveCandidate(null);
-
-    
     
     if (!over || !searchedCandidates) return;
 
     const activeId = Number(active.id);
-    const originalCandidates = searchedCandidates; 
+    const originalCandidates = [...searchedCandidates]; 
     const activeCandidate = originalCandidates.find(c => c.id === activeId);
     
     if (!activeCandidate) return;
@@ -77,7 +75,7 @@ const KanbanBoard: React.FC = () => {
     };
 
     setAllCandidates(prev =>
-      prev.map(c => (c.id === updatedCandidate.id ? updatedCandidate : c))
+      (prev || []).map(c => (c.id === updatedCandidate.id ? updatedCandidate : c))
     );
 
     try {
@@ -97,46 +95,50 @@ const KanbanBoard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="h-screen flex flex-col">
-        <div className="flex-shrink-0 bg-white shadow-sm border-b px-6 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-gray-900">Kanban Board</h1>
-            <Link 
-              to={`/jobs/${jobId}/candidates`} 
-              className="px-4 py-2 bg-black-600 text-white rounded-md hover:bg-black-700 transition-colors"
-            >
-              Go to List View
-            </Link>
+    <div className="h-screen flex flex-col bg-gray-50">
+      <div className="flex-shrink-0 bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+           <div className="flex justify-between items-center flex-wrap gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Kanban Board</h1>
+                <p className="text-gray-600 mt-1 text-sm">Visually track candidates through the hiring stages.</p>
+              </div>
+              <Link 
+                to={`/jobs/${jobId}/candidates`} 
+                className="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all text-sm"
+              >
+                <svg className="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                List View
+              </Link>
           </div>
         </div>
+      </div>
 
-        <div className="flex-1 overflow-hidden">
-          <DndContext
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            collisionDetection={closestCorners}
-          >
-            <div className="h-full flex gap-4 overflow-x-auto p-6">
-              {stages.map(stage => (
-                <KanbanColumn
-                  key={stage}
-                  id={stage}
-                  title={stage}
-                  candidates={candidatesByStage[stage] || []}
-                  searchTerm={columnSearchTerms[stage] || ''}
-                  onSearchChange={(value) => handleColumnSearchChange(stage, value)}
-                />
-              ))}
-            </div>
-            
-            <DragOverlay>
-              {activeCandidate ? (
-                <CandidateCard candidate={activeCandidate} isDragOverlay={true} />
-              ) : null}
-            </DragOverlay>
-          </DndContext>
-        </div>
+      <div className="flex-1 overflow-x-auto">
+        <DndContext
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          collisionDetection={closestCorners}
+        >
+          <div className="h-full flex gap-4 p-6">
+            {stages.map(stage => (
+              <KanbanColumn
+                key={stage}
+                id={stage}
+                title={stage}
+                candidates={candidatesByStage[stage] || []}
+                searchTerm={columnSearchTerms[stage] || ''}
+                onSearchChange={(value) => handleColumnSearchChange(stage, value)}
+              />
+            ))}
+          </div>
+          
+          <DragOverlay>
+            {activeCandidate ? (
+              <CandidateCard candidate={activeCandidate} isDragOverlay={true} />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       </div>
     </div>
   );

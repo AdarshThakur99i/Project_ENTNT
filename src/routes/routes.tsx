@@ -21,7 +21,7 @@ function AppRoutes() {
       <Route path="/jobs/:jobId/assessment-preview" element={<AssessmentPreview />} />
       
       <Route path="/jobs/:jobId/candidates" element={<CandidatesList />} />
-      <Route path="/jobs/:jobId/candidates/kanban" element={<KanbanBoard />} /> 
+      <Route path="/jobs/:jobId/candidates/kanbanview" element={<KanbanBoard />} /> 
       <Route path="/jobs/:jobId/candidates/:candidateId" element={<CandidateProfile />} />
       
       <Route path="/jobs/:jobId" element={<JobDetail />} />

@@ -49,7 +49,7 @@ export const jobsHandlers = [
   http.patch('/api/jobs/reorder', async ({ request }) => {
     console.log("MSW: Intercepted PATCH /api/jobs/reorder");
 
-    if (Math.random() < 0.1) {
+    if (Math.random() < 0.05) {
       return new Response(JSON.stringify({ message: 'Simulated server error' }), { status: 500 });
     }
 
@@ -113,16 +113,6 @@ export const jobsHandlers = [
     await db.jobs.delete(jobId);
     return new Response(null, { status: 204 });
   }),
-  //assessment logic.
-    http.get('/api/jobs/:jobId/assessments', async ({ params }) => {
-    const jobId = Number(params.jobId);
-    const assessments = await db.assessments.where('jobId').equals(jobId).toArray();
-    return Response.json(assessments);
-  }),
-   http.post('/api/jobs/:jobId/assessments', async ({ request }) => {
-    const assessmentData = await request.json() as Omit<Assessment, 'id'>;
-    const newId = await db.assessments.add(assessmentData);
-    const newAssessment = await db.assessments.get(newId);
-    return Response.json(newAssessment, { status: 201 });
-  }),
+ 
+
 ];

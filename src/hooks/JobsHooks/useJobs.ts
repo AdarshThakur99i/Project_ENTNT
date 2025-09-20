@@ -100,12 +100,12 @@ export const useJobs = () => {
     setJobs(reorderedJobs); 
     
     try {
-      // The 'order' property is updated based on the new array index.
+   
       const jobsToSave = reorderedJobs.map((job, index) => ({...job, order: index}));
       await jobsApi.saveJobOrder(jobsToSave);
     } catch (error) {
       console.error("Reorder failed:", error);
-      alert("Error: Could not save the new job order. Reverting changes.");
+      alert("Error: Could not save the new job order. Reverting changes(intentional 5% error to check rollback features).");
       setJobs(originalJobs);
     }
   };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import * as jobsApi from '../api/JobsApi/JobsApi';
 import type { Job } from '../data/JobsData/Jobs.types';
@@ -28,10 +28,7 @@ const JobDetails: React.FC = () => {
 
   const handleDelete = async () => {
     if (!jobId) return;
-
-    // Use a custom modal in a real app instead of window.confirm
     const isConfirmed = window.confirm("Are you sure you want to delete this job? This action cannot be undone.");
-
     if (isConfirmed) {
       try {
         await jobsApi.deleteJob(parseInt(jobId));
@@ -53,55 +50,74 @@ const JobDetails: React.FC = () => {
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <Link to="/jobs/jobsList" className="text-blue-500 hover:underline mb-6 block">&larr; Back to all jobs</Link>
-
-      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-8">
-        <h1 className="text-4xl font-bold">{job.title}</h1>
+    <div className="max-w-4xl mx-auto px-6 py-12">
+      {/* --- Updated Header Section --- */}
+      <div className="border-b border-gray-200 pb-5 mb-8">
+          <div className="flex justify-between items-center flex-wrap gap-4">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800 tracking-tight">{job.title}</h1>
+                <div className="mt-2 flex items-center gap-4">
+                    <span className={`capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${job.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                        {job.status}
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                        {job.tags.map(tag => (
+                            <span key={tag} className="text-xs text-gray-600">{tag}</span>
+                        ))}
+                    </div>
+                </div>
+              </div>
+          </div>
       </div>
+      
+      {/* --- Updated Action Cards --- */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Candidates Card */}
+        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm hover:shadow-lg transition-shadow">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold mb-2 text-gray-800">Candidates</h2>
+              <p className="text-gray-600 mb-4 text-sm">View and manage the candidates who have applied for this role.</p>
+              <Link to={`/jobs/${jobId}/candidates`} className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                View Candidates &rarr;
+              </Link>
+            </div>
+          </div>
+        </div>
 
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Candidates</h2>
-        <div className="block p-6 bg-white border rounded-lg">
-          <p className="text-gray-600 mb-4">View and manage the candidates who have applied for this role.</p>
-          <div className="flex items-center gap-4">
-            <Link
-              to={`/jobs/${jobId}/candidates`}
-              className="px-4 py-2 bg-black-500 text-white font-semibold rounded-lg hover:bg-black-600 transition-colors"
-            >
-              View Candidates
-            </Link>
+        {/* Assessment Card */}
+        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm hover:shadow-lg transition-shadow">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold mb-2 text-gray-800">Assessment</h2>
+              <p className="text-gray-600 mb-4 text-sm">Manage or preview the skills assessment for this role.</p>
+              <div className="flex items-center gap-4">
+                <Link to={`/jobs/${jobId}/assessment-builder`} className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                  Edit Assessment
+                </Link>
+                <Link to={`/jobs/${jobId}/assessment-preview`} className="font-semibold text-gray-600 hover:text-gray-800 transition-colors">
+                  Preview
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Assessment</h2>
-        <div className="block p-6 bg-white border rounded-lg">
-          <p className="text-gray-600 mb-4">Manage or preview the skills assessment for this role.</p>
-          <div className="flex items-center gap-4">
-            <Link
-              to={`/jobs/${jobId}/assessment-builder`}
-              className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
-            >
-              Edit Assessment
-            </Link>
-            <Link
-              to={`/jobs/${jobId}/assessment-preview`}
-              className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
-            >
-              Preview
-            </Link>
-          </div>
-        </div>
-      </div>
-      <div className="mt-12 p-4 border-t border-dashed border-red-300">
+      
+      {/* Danger Zone */}
+      <div className="mt-16 pt-6 border-t border-gray-200">
         <h3 className="text-lg font-semibold text-red-700">Danger Zone</h3>
-        <div className="mt-2 flex justify-between items-center">
-          <p className="text-sm text-gray-600">Permanently delete this job and all associated data.</p>
+        <div className="mt-2 flex justify-between items-center bg-red-50 p-4 rounded-lg">
+          <p className="text-sm text-red-800">Permanently delete this job and all associated data. This action cannot be undone.</p>
           <button
             onClick={handleDelete}
-            className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
           >
             Delete Job
           </button>
@@ -112,3 +128,4 @@ const JobDetails: React.FC = () => {
 };
 
 export default JobDetails;
+

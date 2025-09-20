@@ -24,20 +24,25 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, allTags, onFilterChang
   };
 
   return (
-    <div className="p-4 border rounded-lg shadow-md mb-8 bg-gray-50">
+    <div className="py-6 border-y border-gray-200 mb-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input
-          type="text"
-          placeholder="Search by title..."
-          value={filters.search}
-          onChange={(e) => onFilterChange('search', e.target.value)}
-          className="p-2 border rounded-md"
-        />
+        <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search by title..."
+              value={filters.search}
+              onChange={(e) => onFilterChange('search', e.target.value)}
+              className="w-full p-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+        </div>
         
         <select
           value={filters.status}
           onChange={(e) => onFilterChange('status', e.target.value)}
-          className="p-2 border rounded-md"
+          className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="all">All Statuses</option>
           <option value="active">Active</option>
@@ -47,11 +52,11 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, allTags, onFilterChang
       
       <div className="mt-4">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-gray-700">Filter by Tags:</h3>
+          <h3 className="font-semibold text-gray-700 text-sm">Tags</h3>
           {filters.tags.length > 0 && (
             <button
               onClick={clearAllTags}
-              className="text-xs px-2 py-1 text-red-600 hover:text-red-800 underline"
+              className="text-sm font-semibold px-3 py-1.5 text-blue-500 hover:bg-blue-100 rounded-full transition-colors"
             >
               Clear All
             </button>
@@ -65,15 +70,14 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, allTags, onFilterChang
               <button
                 key={tag}
                 onClick={() => handleTagClick(tag)}
-                className={`px-3 py-1 text-sm rounded-full transition-all duration-200 transform hover:scale-105 ${
+                className={`inline-flex items-center px-3 py-1.5 text-sm font-semibold rounded-full border transition-all duration-200 ${
                   isSelected
-                    ? 'bg-blue-500 text-white shadow-md ring-2 ring-blue-300'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-gray-600 text-white border-blue-500'
+                    : 'bg-gray-400 text-gray-900 border-gray-200 hover:bg-gray-200'
                 }`}
               >
                 {tag}
-                {/* Add a small checkmark for better visual feedback */}
-                {isSelected && <span className="ml-1 text-xs opacity-80">✓</span>}
+                {isSelected && <span className="ml-1.5 text-white opacity-75">✓</span>}
               </button>
             );
           })}
