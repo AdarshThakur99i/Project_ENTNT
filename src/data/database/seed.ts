@@ -1,5 +1,5 @@
 import { db } from './db';
-import type { Job } from '../../types/Jobs.types';
+import type { Job } from '../JobsData/Jobs.types';
 import { generateSeedCandidates } from '../../data/CandidatesFunctions/mockCandidates';
 import type { Assessment } from '../../data/AssessmentFunctions/assessment';
 

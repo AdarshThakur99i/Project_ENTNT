@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import type { Job } from '../../types/Jobs.types';
+import type { Job } from '../../data/JobsData/Jobs.types';
 
 interface JobItemProps {
   job: Job;

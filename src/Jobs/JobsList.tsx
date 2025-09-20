@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Job } from '../types/Jobs.types'; 
+import type { Job } from '../data/JobsData/Jobs.types'; 
 import { useJobs } from '../hooks/JobsHooks/useJobs';
 import JobItem from '../components/JobComponents/JobItem';
 import Pagination from '../components/pagination';

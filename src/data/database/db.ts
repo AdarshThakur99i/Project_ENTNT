@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie';
-import type { Job } from '../../types/Jobs.types';
+import type { Job } from '../JobsData/Jobs.types';
 import type { Assessment, AssessmentResponse } from '../../data/AssessmentFunctions/assessment';
 import type { Candidate } from '../../data/CandidatesFunctions/mockCandidates';
 
