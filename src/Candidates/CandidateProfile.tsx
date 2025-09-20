@@ -1,6 +1,6 @@
 import {useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import type { Candidate, Note as NoteType } from '../data/CandidatesFunctions/mockCandidates';
+import type { Candidate } from '../data/CandidatesFunctions/mockCandidates';
 import Note from '../components/CandidateComponents/Note';
 import NoteInput from '../components/CandidateComponents/NoteInput';
 

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 
 const Layout: React.FC = () => {
-  const location = useLocation();
+  
 
 
   return (
