@@ -1,4 +1,4 @@
-import type { Job } from '../../data/JobsData/Jobs.types';
+import type { Job } from '../../types/Jobs.types';
 /**
  * Fetches a paginated and filtered list of jobs from the API.
  */

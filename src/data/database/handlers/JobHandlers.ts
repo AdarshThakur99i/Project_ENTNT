@@ -1,6 +1,6 @@
 import { http } from 'msw';
 import { db } from '../db';
-import type { Job } from '../../../data/JobsData/Jobs.types';
+import type { Job } from '../../../types/Jobs.types';
 export const jobsHandlers = [
   http.get('/api/jobs', async ({ request }) => {
     const url = new URL(request.url);

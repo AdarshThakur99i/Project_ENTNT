@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as jobsApi from '../../api/JobsApi/JobsApi';
 import { useDragAndDrop } from './useDragAndDrop';
-import type { Job } from '../../data/JobsData/Jobs.types';
+import type { Job } from '../../types/Jobs.types';
 
 const JOBS_PER_PAGE = 5;
 
