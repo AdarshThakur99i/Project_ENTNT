@@ -7,6 +7,7 @@ export interface Job {
   title: string;
   status: JobStatus;
   tags: string[];
+  order: number;
 }
 // export let ALL_JOBS: Job[] = Array.from({ length: 23 }, (_, i) => ({
 //   id: i + 1,

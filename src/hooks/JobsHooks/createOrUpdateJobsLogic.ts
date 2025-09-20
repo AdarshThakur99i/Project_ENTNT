@@ -79,7 +79,7 @@ export const saveJobOrder = async (jobs: Job[]): Promise<void> => {
         console.log("LOGIC: Success: Order saved.");
         resolve();
       } else {
-        console.error("LOGIC: Failure: Could not save order (Intentional Error).");
+        console.error("LOGIC: Failure: Could not save order (Intentional 10% Error).");
         reject(new Error("Database write failed!"));
       }
     }, 1000);

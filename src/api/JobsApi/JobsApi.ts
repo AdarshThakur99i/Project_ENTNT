@@ -1,15 +1,14 @@
-
 import type { Job } from '../../data/JobsData/Jobs.types';
 
 /**
  * Fetches a paginated and filtered list of jobs from the API.
- * @param params An object containing pagination and filter options.
  */
 export async function fetchJobs(params: {
   page: number;
   pageSize: number;
   search?: string;
   status?: string;
+  tags?: string[];
 }): Promise<{ data: Job[]; totalCount: number }> {
   const queryParams = new URLSearchParams({
     page: String(params.page),
@@ -22,6 +21,9 @@ export async function fetchJobs(params: {
   if (params.status) {
     queryParams.append('status', params.status);
   }
+  if (params.tags) {
+    params.tags.forEach(tag => queryParams.append('tags', tag));
+  }
   
   const response = await fetch(`/api/jobs?${queryParams.toString()}`);
   
@@ -33,8 +35,7 @@ export async function fetchJobs(params: {
 }
 
 /**
- * Creates a new job by sending data to the API.
- * @param jobData The new job to create, without an ID.
+ * Creates a new job.
  */
 export async function createJob(jobData: Omit<Job, 'id'>): Promise<Job> {
   const response = await fetch('/api/jobs', {
@@ -51,15 +52,13 @@ export async function createJob(jobData: Omit<Job, 'id'>): Promise<Job> {
 }
 
 /**
- * Updates an existing job with new data.
- * @param jobId The ID of the job to update.
- * @param updates An object containing only the fields to change.
+ * FULLY updates a job (using PUT).
  */
-export async function updateJob(jobId: number, updates: Partial<Job>): Promise<Job> {
+export async function updateJob(jobId: number, jobData: Job): Promise<Job> {
   const response = await fetch(`/api/jobs/${jobId}`, {
-    method: 'PATCH',
+    method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updates),
+    body: JSON.stringify(jobData),
   });
 
   if (!response.ok) {
@@ -70,8 +69,24 @@ export async function updateJob(jobId: number, updates: Partial<Job>): Promise<J
 }
 
 /**
- * Fetches a single job by its ID from the API.
- * @param jobId The ID of the job to fetch.
+ * PARTIALLY updates a job (using PATCH).
+ */
+export async function patchJob(jobId: number, updates: Partial<Job>): Promise<Job> {
+  const response = await fetch(`/api/jobs/${jobId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to patch job');
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetches a single job by its ID.
  */
 export async function fetchJobById(jobId: number): Promise<Job> {
   const response = await fetch(`/api/jobs/${jobId}`);
@@ -80,5 +95,46 @@ export async function fetchJobById(jobId: number): Promise<Job> {
     throw new Error(`Failed to fetch job with ID ${jobId}`);
   }
 
+  return response.json();
+}
+
+/**
+ * Saves the new order of jobs.
+ */
+export async function saveJobOrder(reorderedJobs: Job[]): Promise<void> {
+  const response = await fetch('/api/jobs/reorder', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reorderedJobs }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to save job order');
+  }
+}
+
+/**
+ * Deletes a job by its ID.
+ */
+export async function deleteJob(jobId: number): Promise<void> {
+  const response = await fetch(`/api/jobs/${jobId}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete job');
+  }
+}
+
+/**
+ * Fetches all unique tags.
+ */
+export async function fetchTags(): Promise<string[]> {
+  const response = await fetch('/api/tags');
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch tags');
+  }
+  
   return response.json();
 }

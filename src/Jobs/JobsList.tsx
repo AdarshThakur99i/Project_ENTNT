@@ -12,7 +12,7 @@ const JobsList: React.FC = () => {
     currentPage,
     totalPages,
     filters,
-    TAG_POOL,
+    allTags,
     handleFilterChange,
     handleArchive,
     handleDragStart,
@@ -68,7 +68,7 @@ const JobsList: React.FC = () => {
       
       <JobFilters 
         filters={filters}
-        allTags={TAG_POOL}
+        allTags={allTags}
         onFilterChange={handleFilterChange}
       />
 
@@ -106,7 +106,7 @@ const JobsList: React.FC = () => {
         onClose={handleCloseModal}
         onSubmit={handleFormSubmit}
         initialData={editingJob}
-        allTags={TAG_POOL}
+        allTags={allTags}
       />
     </div>
   );

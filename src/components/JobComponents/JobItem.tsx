@@ -11,7 +11,7 @@ interface Job {
 interface JobItemProps {
   job: Job;
   index: number;
-  onArchive: (id: number) => void;
+  onArchive: (id: number, currentStatus: string) => void;
   onEdit: (job: Job) => void; 
   onDragStart: (index: number) => void;
   onDragEnter: (index: number) => void;
@@ -34,14 +34,15 @@ const JobItem: React.FC<JobItemProps> = ({
  
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation(); 
-    e.preventDefault();  
+    e.preventDefault(); 
     onEdit(job);
   };
 
   const handleArchiveClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    onArchive(job.id);
+    // Pass both the id and the current status
+    onArchive(job.id, job.status);
   };
 
   return (
@@ -55,9 +56,7 @@ const JobItem: React.FC<JobItemProps> = ({
       onDragEnd={onDragEnd}
     >
       <div className="flex justify-between items-start flex-wrap">
-      
         <div className="flex-grow pr-4">
-          
           <Link to={`/jobs/${job.id}`} className="no-underline">
             <h2
               className={`text-lg font-semibold truncate transition-opacity duration-500 text-gray-800 hover:text-blue-600 ${
@@ -79,8 +78,6 @@ const JobItem: React.FC<JobItemProps> = ({
             ))}
           </div>
         </div>
-
-    
         <div 
           className={`flex items-center gap-2 mt-2 md:mt-0 flex-shrink-0 transition-opacity duration-500 ${
             job.status === 'archived' ? 'opacity-50' : 'opacity-100'

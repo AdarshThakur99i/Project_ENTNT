@@ -1,22 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import * as jobLogic from '../hooks/JobsHooks/createOrUpdateJobsLogic';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import * as jobsApi from '../api/JobsApi/JobsApi';
 import type { Job } from '../data/JobsData/Jobs.types';
+
 const JobDetails: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
-   const [job, setJob] = useState<Job | null>(null);
+  const navigate = useNavigate(); 
+  const [job, setJob] = useState<Job | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchJob = async () => {
       if (!jobId) return;
       setIsLoading(true);
-      const fetchedJob = await jobLogic.getJobById(parseInt(jobId));
-      setJob(fetchedJob);
-      setIsLoading(false);
+      try {
+        const fetchedJob = await jobsApi.fetchJobById(parseInt(jobId));
+        setJob(fetchedJob);
+      } catch (error) {
+        console.error("Failed to fetch job:", error);
+        setJob(null); 
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchJob();
   }, [jobId]);
+
+  const handleDelete = async () => {
+    if (!jobId) return;
+    
+    const isConfirmed = window.confirm("Are you sure you want to delete this job? This action cannot be undone.");
+    
+    if (isConfirmed) {
+      try {
+        await jobsApi.deleteJob(parseInt(jobId));
+        alert("Job deleted successfully.");
+        navigate('/jobs/jobsList'); 
+      } catch (error) {
+        console.error("Failed to delete job:", error);
+        alert("Error: Could not delete the job.");
+      }
+    }
+  };
 
   if (isLoading) {
     return <div className="p-8 text-center">Loading job details...</div>;
@@ -30,38 +55,29 @@ const JobDetails: React.FC = () => {
     <div className="p-8 max-w-4xl mx-auto">
       <Link to="/jobs/jobsList" className="text-blue-500 hover:underline mb-6 block">&larr; Back to all jobs</Link>
       
-    
       <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-8">
         <h1 className="text-4xl font-bold">{job.title}</h1>
-        <p className="text-lg text-gray-600 mt-2">Status: <span className="font-semibold">{job.status}</span></p>
-        <div className="mt-4">
-          {job.tags.map(tag => (
-            <span key={tag} className="inline-block bg-gray-200 text-gray-800 text-sm font-semibold mr-2 px-3 py-1 rounded-full">
-              {tag}
-            </span>
-          ))}
-        </div>
+       
       </div>
 
-   
-      <div>
+      <div className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Assessment</h2>
-        <Link 
-          to={`/jobs/${jobId}/assessment-builder`} 
-          className="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-blue-500 transition-all"
-        >
-          <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 bg-blue-100 p-3 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-              </svg>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-800">Assessment Builder</h3>
-              <p className="text-gray-600">Create or edit the assessment for this job.</p>
-            </div>
-          </div>
+        <Link to={`/jobs/${jobId}/assessment-builder`} className="block p-6 bg-white border rounded-lg hover:shadow-md">
+       
         </Link>
+      </div>
+
+      <div className="mt-12 p-4 border-t border-dashed border-red-300">
+        <h3 className="text-lg font-semibold text-red-700">Danger Zone</h3>
+        <div className="mt-2 flex justify-between items-center">
+          <p className="text-sm text-gray-600">Permanently delete this job and all associated data.</p>
+          <button 
+            onClick={handleDelete}
+            className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          >
+            Delete Job
+          </button>
+        </div>
       </div>
     </div>
   );

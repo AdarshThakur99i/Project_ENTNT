@@ -1,9 +1,13 @@
 import React from 'react';
 
 interface JobFiltersProps {
-  filters: { title: string; status: string; tags: string[] };
+  filters: {
+    search: string;
+    status: string;
+    tags: string[]; 
+  };
   allTags: string[];
-  onFilterChange: (filterName: 'title' | 'status' | 'tags', value: any) => void;
+  onFilterChange: (filterName: 'search' | 'status' | 'tags', value: any) => void;
 }
 
 const JobFilters: React.FC<JobFiltersProps> = ({ filters, allTags, onFilterChange }) => {
@@ -19,23 +23,17 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, allTags, onFilterChang
     onFilterChange('tags', []);
   };
 
-  const selectAllTags = () => {
-    onFilterChange('tags', [...allTags]);
-  };
-
   return (
     <div className="p-4 border rounded-lg shadow-md mb-8 bg-gray-50">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-     
         <input
           type="text"
-          placeholder="Filter by title..."
-          value={filters.title}
-          onChange={(e) => onFilterChange('title', e.target.value)}
+          placeholder="Search by title..."
+          value={filters.search}
+          onChange={(e) => onFilterChange('search', e.target.value)}
           className="p-2 border rounded-md"
         />
         
-     
         <select
           value={filters.status}
           onChange={(e) => onFilterChange('status', e.target.value)}
@@ -47,30 +45,17 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, allTags, onFilterChang
         </select>
       </div>
       
-     
       <div className="mt-4">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-gray-700">
-            Filter by Tags: 
-            {filters.tags.length > 0 && (
-              <span className="text-sm font-normal text-blue-600 ml-1">
-                ({filters.tags.length} selected)
-              </span>
-            )}
-          </h3>
-          
-        
-          <div className="flex gap-2">
-            {filters.tags.length > 0 && (
-              <button
-                onClick={clearAllTags}
-                className="text-xs px-2 py-1 text-red-600 hover:text-red-800 underline"
-              >
-                Clear All
-              </button>
-            )}
-         
-          </div>
+          <h3 className="font-semibold text-gray-700">Filter by Tags:</h3>
+          {filters.tags.length > 0 && (
+            <button
+              onClick={clearAllTags}
+              className="text-xs px-2 py-1 text-red-600 hover:text-red-800 underline"
+            >
+              Clear All
+            </button>
+          )}
         </div>
         
         <div className="flex flex-wrap gap-2">
@@ -87,22 +72,12 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, allTags, onFilterChang
                 }`}
               >
                 {tag}
-                {isSelected && (
-                  <span className="ml-1 text-xs opacity-80">✓</span>
-                )}
+                {/* Add a small checkmark for better visual feedback */}
+                {isSelected && <span className="ml-1 text-xs opacity-80">✓</span>}
               </button>
             );
           })}
         </div>
-        
-     
-        {filters.tags.length > 0 && (
-          <div className="mt-3 p-2 bg-blue-50 rounded-md border border-blue-200">
-            <p className="text-sm text-blue-800">
-              <span className="font-medium">Active filters:</span> {filters.tags.join(', ')}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
