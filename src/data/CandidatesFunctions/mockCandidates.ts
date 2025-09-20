@@ -1,6 +1,6 @@
 export interface Candidate {
   id: number;
-  jobId: number; // Added to link a candidate to a job
+  jobId: number;
   name: string;
   email: string;
   order?: number;
@@ -19,11 +19,7 @@ const STAGES = ['Applied', 'Screening', 'Interview', 'Hired', 'Rejected'] as con
 const FIRST_NAMES = ['Aarav', 'Vivaan', 'Aditya', 'Vihaan', 'Arjun', 'Sai', 'Reyansh', 'Ayaan'];
 const LAST_NAMES = ['Sharma', 'Verma', 'Gupta', 'Singh', 'Kumar', 'Thakur', 'Chauhan', 'Patel'];
 
-/**
- * Generates a list of candidate data to be seeded into the database.
- * @param totalJobs The total number of jobs to distribute candidates among.
- * @returns An array of candidate objects without the 'id' property.
- */
+
 export function generateSeedCandidates(totalJobs: number): Omit<Candidate, 'id'>[] {
     const candidates: Omit<Candidate, 'id'>[] = [];
     const totalCandidates = 1000;
@@ -34,10 +30,15 @@ export function generateSeedCandidates(totalJobs: number): Omit<Candidate, 'id'>
         const currentStage = STAGES[Math.min(stageIndex, STAGES.length - 1)];
         const orderInStage = i % (candidatesPerJob / STAGES.length);
 
+        const randomFirstName = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
+        const randomLastName = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+        const name = `${randomFirstName} ${randomLastName}`;
+        const email = `${randomFirstName.toLowerCase()}.${randomLastName.toLowerCase()}${i}@example.com`;
+
         candidates.push({
             jobId: (i % totalJobs) + 1,
-            name: `${FIRST_NAMES[i % FIRST_NAMES.length]} ${LAST_NAMES[i % LAST_NAMES.length]}`,
-            email: `${FIRST_NAMES[i % FIRST_NAMES.length].toLowerCase()}.${LAST_NAMES[i % LAST_NAMES.length].toLowerCase()}@example.com`,
+            name: name,
+            email: email,
             currentStage,
             order: orderInStage,
             stageHistory: [{
@@ -49,3 +50,4 @@ export function generateSeedCandidates(totalJobs: number): Omit<Candidate, 'id'>
     }
     return candidates;
 }
+

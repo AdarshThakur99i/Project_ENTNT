@@ -7,7 +7,7 @@ const TAG_POOL = ['React', 'TypeScript', 'Node.js', 'Remote', 'Full-time', 'Grap
 
 function generateRandomJobs(): Omit<Job, 'id'>[] {
   const jobs: Omit<Job, 'id'>[] = [];
-  const titles = ['Software Engineer', 'Frontend Developer', 'Backend Engineer', 'Full-Stack Developer', 'DevOps Specialist'];
+  const titles = ['Software Engineer', 'Frontend Developer', 'Backend Engineer', 'Full-Stack Developer', 'DevOps Specialist','Data Analyst'];
   const totalJobs = 25;
 
   for (let i = 1; i <= totalJobs; i++) {
@@ -25,55 +25,47 @@ function generateRandomJobs(): Omit<Job, 'id'>[] {
   return jobs;
 }
 
-function generateSeedAssessments(): Omit<Assessment, 'id'>[] {
-    return [
-        
-        {
-            jobId: 1,
-            title: "Frontend Developer Skills Test",
-            sections: [
-                {
-                    id: 'sec-1-1',
-                    title: "Core JavaScript",
-                    questions: [
-                        { id: 'q-1-1-1', text: "What is the difference between `let`, `const`, and `var`?", isRequired: true, details: { type: 'long-text' } },
-                        { id: 'q-1-1-2', text: "Which of these is a primitive data type?", isRequired: true, details: { type: 'single-choice', options: ['Object', 'Array', 'String', 'Function'] }, correctAnswer: 'String' }
-                    ]
-                },
-                {
-                    id: 'sec-1-2',
-                    title: "React Fundamentals",
-                    questions: [
-                        { id: 'q-1-2-1', text: "Which of the following are valid React hooks?", isRequired: true, details: { type: 'multi-choice', options: ['useState', 'useEffect', 'useGlobal', 'useDOM'] }, correctAnswer: ['useState', 'useEffect'] }
-                    ]
-                }
-            ]
-        },
-        {
-            jobId: 2,
-            title: "Technical Knowledge Screening",
-            sections: [
-                {
-                    id: 'sec-2-1',
-                    title: "Problem Solving",
-                    questions: [
-                        { id: 'q-2-1-1', text: "Please upload a code file that solves the FizzBuzz problem.", isRequired: false, details: { type: 'file-upload' } }
-                    ]
-                }
-            ]
-        }
-    ];
-}
+function generateSeedAssessments(totalJobs: number): Omit<Assessment, 'id'>[] {
+    const assessments: Omit<Assessment, 'id'>[] = [];
 
+    for (let i = 1; i <= totalJobs; i++) {
+        assessments.push({
+            jobId: i, 
+            title: "Default Technical Screening",
+            sections: [
+                {
+                    id: `sec-${i}-1`,
+                    title: "Core Competency",
+                    questions: [
+                        { 
+                            id: `q-${i}-1-1`, 
+                            text: "Describe a challenging project you've worked on and your role in it.", 
+                            isRequired: true, 
+                            details: { type: 'long-text' } 
+                        },
+                        { 
+                            id: `q-${i}-1-2`, 
+                            text: "Which of these technologies are you most proficient in?", 
+                            isRequired: true, 
+                            details: { type: 'multi-choice', options: ['JavaScript', 'Python', 'Java', 'C#'] },
+                            correctAnswer: ['JavaScript']
+                        }
+                    ]
+                }
+            ]
+        });
+    }
+    return assessments;
+}
 
 export async function seedDatabase() {
   const jobCount = await db.jobs.count();
   const candidateCount = await db.candidates.count();
   const assessmentCount = await db.assessments.count();
 
+ 
   if (jobCount === 0 && candidateCount === 0 && assessmentCount === 0) {
     console.log("Seeding database with initial data...");
-    
     
     const initialJobs = generateRandomJobs();
     await db.jobs.bulkAdd(initialJobs);
@@ -84,7 +76,7 @@ export async function seedDatabase() {
     await db.candidates.bulkAdd(initialCandidates);
     console.log(` ${initialCandidates.length} candidates seeded.`);
 
-    const initialAssessments = generateSeedAssessments();
+    const initialAssessments = generateSeedAssessments(totalJobs);
     await db.assessments.bulkAdd(initialAssessments as Assessment[]);
     console.log(` ${initialAssessments.length} assessments seeded.`);
     
