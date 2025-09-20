@@ -19,6 +19,9 @@ button,
   color: #213547;
   background-color: #ffffff;
 }
+.kanban-board * {
+  transition: none !important;
+}
 
 body {
   margin: 0;

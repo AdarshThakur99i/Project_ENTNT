@@ -1,5 +1,4 @@
 import type { Job } from '../../data/JobsData/Jobs.types';
-import type { Assessment } from '../../data/AssessmentFunctions/assessment';
 /**
  * Fetches a paginated and filtered list of jobs from the API.
  */

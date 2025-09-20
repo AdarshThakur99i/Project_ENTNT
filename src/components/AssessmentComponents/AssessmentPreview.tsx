@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchAssessmentById } from '../../api/JobsApi/AssessmentApi';
-import type { Assessment, Section, Question, QuestionDetails } from '../../data/AssessmentFunctions/assessment';
+import type { Assessment, Question, QuestionDetails } from '../../data/AssessmentFunctions/assessment';
 
 const PreviewSingleChoice: React.FC<{ question: Question }> = ({ question }) => {
     if (question.details.type !== 'single-choice') return null;
@@ -62,7 +62,7 @@ interface AssessmentPreviewProps {
 const AssessmentPreview: React.FC<AssessmentPreviewProps> = ({ assessment: assessmentFromProp }) => {
     const { jobId, assessmentId } = useParams<{ jobId: string; assessmentId: string }>();
     const [internalAssessment, setInternalAssessment] = useState<Assessment | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         if (assessmentFromProp === undefined && assessmentId) {

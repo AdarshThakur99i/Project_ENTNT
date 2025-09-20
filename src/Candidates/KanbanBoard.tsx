@@ -98,6 +98,7 @@ const KanbanBoard: React.FC = () => {
   }
 
   return (
+     <div className="h-screen flex flex-col bg-gray-50 kanban-board">
     <div className="h-screen flex flex-col bg-gray-50">
       <div className="flex-shrink-0 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -143,6 +144,7 @@ const KanbanBoard: React.FC = () => {
           </DragOverlay>
         </DndContext>
       </div>
+    </div>
     </div>
   );
 };

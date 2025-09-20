@@ -1,4 +1,4 @@
-import type { Candidate, Note } from '../../data/CandidatesFunctions/mockCandidates';
+import type { Candidate } from '../../data/CandidatesFunctions/mockCandidates';
 
 
 export async function fetchCandidatesForJob(jobId: number, stageFilter: string | 'all'): Promise<Candidate[]> {

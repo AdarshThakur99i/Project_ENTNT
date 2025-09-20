@@ -1,25 +1,31 @@
 import { useState, useEffect } from 'react';
-// Please double-check that this import path is correct for your project structure.
 import * as jobsApi from '../../api/JobsApi/JobsApi';
 import { useDragAndDrop } from './useDragAndDrop';
-// The Job interface is imported to ensure type safety throughout the hook.
 import type { Job } from '../../data/JobsData/Jobs.types';
 
 const JOBS_PER_PAGE = 5;
 
 export const useJobs = () => {
-  // The 'jobs' state is strongly typed as an array of 'Job' objects.
   const [jobs, setJobs] = useState<Job[]>([]);
   const [allTags, setAllTags] = useState<string[]>([]); 
   const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [filters, setFilters] = useState({
-    search: '', 
-    status: 'all',
-    tags: [] as string[],
-  });
+ const [currentPage, setCurrentPage] = useState<number>(1);
+const [totalPages, setTotalPages] = useState<number>(0);
+  
 
+type JobFilters = {
+  search: string;
+  status: string;
+  tags: string[];
+};
+
+const [filters, setFilters] = useState<JobFilters>({
+  search: '',
+  status: 'all',
+  tags: [],
+});
+
+ 
   const refetchTags = async () => { 
     const tagsResponse = await jobsApi.fetchTags();
     setAllTags(tagsResponse);
@@ -50,12 +56,14 @@ export const useJobs = () => {
 
   const refetchJobs = async () => {
     setIsLoading(true);
+    const pageNumber = currentPage ?? 1;
     try {
-      const response: { data: Job[]; totalCount: number } = await jobsApi.fetchJobs({
-        page: currentPage,
-        pageSize: JOBS_PER_PAGE,
-        ...filters,
-      });
+      const response: { data: Job[]; totalCount: number } = 
+await jobsApi.fetchJobs({
+  page: pageNumber,
+  pageSize: JOBS_PER_PAGE,
+  ...filters,
+});
       setJobs(response.data);
       setTotalPages(Math.ceil(response.totalCount / JOBS_PER_PAGE));
     } catch (error) {
@@ -89,12 +97,17 @@ export const useJobs = () => {
     }
   };
 
-  const handleFilterChange = (filterName: keyof typeof filters, value: any) => {
-    setFilters(prevFilters => ({ ...prevFilters, [filterName]: value }));
-    setCurrentPage(1); 
-  };
-  
-  // This function handles reordering and correctly updates the 'order' property.
+  const handleFilterChange = <K extends keyof JobFilters>(
+  filterName: K,
+  value: JobFilters[K]
+) => {
+  setFilters(prev => ({
+    ...prev,
+    [filterName]: value,
+  } as JobFilters));
+
+  setCurrentPage(1);
+};
   const handleReorderJobs = async (reorderedJobs: Job[]) => {
     const originalJobs = [...jobs];
     setJobs(reorderedJobs); 
@@ -117,7 +130,6 @@ export const useJobs = () => {
     handleDrop 
   } = useDragAndDrop(jobs, handleReorderJobs);
 
-  // This function correctly updates the 'status' property.
   const handleArchive = async (id: number, currentStatus: string) => {
     const originalJobs = [...jobs];
     const newStatus = currentStatus === 'active' ? 'archived' : 'active';
