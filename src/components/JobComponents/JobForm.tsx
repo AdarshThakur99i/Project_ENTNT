@@ -1,14 +1,7 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
-type JobStatus = 'active' | 'inactive';
 
-interface Job {
-  id: number;
-  title: string;
-  status: JobStatus;
-  tags: string[];
-  order: number;
-}
+ import type { Job,JobStatus } from '@/data/JobsData/Jobs.types';
 
 interface JobFormProps {
   isOpen: boolean;
@@ -31,7 +24,7 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialDat
   useEffect(() => {
     if (isOpen) {
       if (initialData) {
-        // Remove the id property when using initial data
+       
         const { id, ...initialFormData } = initialData;
         setFormData(initialFormData);
       } else {
