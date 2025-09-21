@@ -1,14 +1,20 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 * {
   transition: all 0.2s ease-in-out;
 }
-
+@layer utilities {
+  .drag-area * {
+    transition: none !important;
+  }
+}
 button, 
 .transition,
 [class*="hover:"],
 [class*="focus:"] {
   transition: all 0.2s ease-in-out;
 }
+
 
 
 :root {

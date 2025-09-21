@@ -41,54 +41,54 @@ const Pagination: React.FC<PaginationProps> = ({
   }
 
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4">
-    
+   <div className="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4">
+  {/* Previous Button */}
+  <button
+    onClick={() => onPageChange(currentPage - 1)}
+    disabled={currentPage === 1 || isLoading}
+    className="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-700"
+  >
+    ← Previous
+  </button>
+
+  {/* Page Info + Go To Form */}
+  <div className="flex flex-col sm:flex-row items-center gap-4">
+    <span className="text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+      Page {currentPage} of {totalPages}
+    </span>
+
+    <form onSubmit={handleGoToPage} className="flex items-center gap-2">
+      <label htmlFor="goToPage" className="text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+        Go to:
+      </label>
+      <input
+        id="goToPage"
+        type="text"
+        value={goToPage}
+        onChange={handleInputChange}
+        placeholder="Page #"
+        disabled={isLoading}
+        className="w-16 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-700 transition-colors"
+      />
       <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1 || isLoading}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300"
+        type="submit"
+        disabled={isLoading || !goToPage}
+        className="px-3 py-1 text-sm bg-green-500 dark:bg-green-600 text-white rounded hover:bg-green-600 dark:hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-700"
       >
-        ← Previous
+        Go
       </button>
+    </form>
+  </div>
 
-      <div className="flex flex-col sm:flex-row items-center gap-4">
-       
-        <span className="text-sm text-gray-600 whitespace-nowrap">
-          Page {currentPage} of {totalPages}
-        </span>
+  <button
+    onClick={() => onPageChange(currentPage + 1)}
+    disabled={currentPage === totalPages || isLoading}
+    className="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-700"
+  >
+    Next →
+  </button>
+</div>
 
-        <form onSubmit={handleGoToPage} className="flex items-center gap-2">
-          <label htmlFor="goToPage" className="text-sm text-gray-600 whitespace-nowrap">
-            Go to:
-          </label>
-          <input
-            id="goToPage"
-            type="text"
-            value={goToPage}
-            onChange={handleInputChange}
-            placeholder="Page #"
-            disabled={isLoading}
-            className="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:border-blue-500 disabled:bg-gray-100"
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !goToPage}
-            className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300"
-          >
-            Go
-          </button>
-        </form>
-      </div>
-
-    
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages || isLoading}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300"
-      >
-        Next →
-      </button>
-    </div>
   );
 };
 
