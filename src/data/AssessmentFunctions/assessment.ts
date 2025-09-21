@@ -1,6 +1,4 @@
-// Add these new types to your assessment.ts file
 
-// 1. Define the detailed structures for each question type
 interface ShortTextDetails {
   type: 'short-text';
   maxLength?: number;
@@ -31,7 +29,6 @@ interface FileUploadDetails {
   type: 'file-upload';
 }
 
-// 2. Export a union of all possible detail types as QuestionDetails
 export type QuestionDetails =
   | ShortTextDetails
   | LongTextDetails
@@ -40,7 +37,6 @@ export type QuestionDetails =
   | NumericDetails
   | FileUploadDetails;
 
-// 3. Replace your old Question interface with this one
 export interface Question {
   id: string;
   text: string;
@@ -54,8 +50,6 @@ export interface Question {
 }
 
 
-// --- Keep your other interfaces as they are ---
-
 export interface Section {
   id: string;
   title: string;
@@ -66,6 +60,7 @@ export interface Assessment {
   id: number;
   jobId: number;
   title: string;
+  //  assessmentId: string | number;
   sections: Section[];
 }
 
@@ -73,5 +68,6 @@ export interface AssessmentResponse {
   id?: number;
   jobId: number;
   candidateId: number;
+  assessmentId: number | string;
   responses: Record<string, any>;
 }
