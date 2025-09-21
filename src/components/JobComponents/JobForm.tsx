@@ -153,7 +153,7 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialDat
             </div>
           </div>
           
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="order">
               Order
             </label>
@@ -166,7 +166,7 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialDat
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               min="0"
             />
-          </div>
+          </div> */}
           
           <div className="flex justify-end gap-4 border-t pt-4 mt-6">
             <button
