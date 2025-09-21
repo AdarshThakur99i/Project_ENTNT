@@ -10,7 +10,6 @@ export const useCandidates = (jobId: number | undefined) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
-    // If there's no valid jobId, we clear the data and stop loading.
     if (!jobId) {
       setAllCandidates([]);
       setIsLoading(false);
@@ -20,12 +19,11 @@ export const useCandidates = (jobId: number | undefined) => {
     const getCandidates = async () => {
       setIsLoading(true);
       try {
-        // The API function expects a number and a string, which are guaranteed here.
         const data = await candidateApi.fetchCandidatesForJob(jobId, stageFilter);
         setAllCandidates(data);
       } catch (error) {
           console.error(`Failed to fetch candidates for job ${jobId}:`, error);
-          setAllCandidates([]); // Safely reset to an empty array on error
+          setAllCandidates([]); 
       } finally {
         setIsLoading(false);
       }
@@ -34,7 +32,6 @@ export const useCandidates = (jobId: number | undefined) => {
     getCandidates();
   }, [jobId, stageFilter]);
 
-  // Memoized filtering logic to improve performance.
   const searchedCandidates = useMemo(() => {
     if (!searchTerm) {
       return allCandidates;

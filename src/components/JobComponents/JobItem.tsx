@@ -1,106 +1,170 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import type { Job } from '@/data/JobsData/Jobs.types'; 
+import { Link } from 'react-router-dom'; 
+import type { Job, JobStatus } from '@/data/JobsData/Jobs.types';
+import { MapPin, Clock, DollarSign, BarChart2, MoreHorizontal } from 'lucide-react';
 
 interface JobItemProps {
   job: Job;
   index: number;
-  onArchive: (id: number, currentStatus: string) => void;
+  onArchive: (id: number, currentStatus: JobStatus) => void;
   onEdit: (job: Job) => void;
   onDragStart: (index: number) => void;
   onDragEnter: (index: number) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: () => void;
-  onDragEnd: () => void;
 }
 
-const JobItem: React.FC<JobItemProps> = ({
-  job,
-  index,
-  onArchive,
-  onEdit,
-  onDragStart,
-  onDragEnter,
-  onDragOver,
-  onDrop,
-  onDragEnd,
-}) => {
-  const handleEditClick = (e: React.MouseEvent) => {
+const JobItem: React.FC<JobItemProps> = ({ job, index, onArchive, onEdit, onDragStart, onDragEnter, onDragOver, onDrop }) => {
+
+  const handleActionClick = (e: React.MouseEvent, action: () => void) => {
     e.stopPropagation();
     e.preventDefault();
-    onEdit(job);
+    action();
   };
 
-  const handleArchiveClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onArchive(job.id, job.status);
+  const statusStyles: Record<JobStatus, string> = {
+    active: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800',
+    inactive: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800',
+    archived: 'bg-gray-50 dark:bg-gray-700/20 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-600',
+  };
+
+  const getJobInitial = (title: string): string => {
+    return title ? title.charAt(0).toUpperCase() : '?';
+  };
+
+  const getJobColor = (title: string): string => {
+    const colors = [
+      'bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-red-500',
+      'bg-indigo-500', 'bg-pink-500', 'bg-yellow-500', 'bg-teal-500'
+    ];
+    if (!title) return colors[0];
+    const charCodeSum = title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[charCodeSum % colors.length];
   };
 
   return (
-   <div
-  className={`border rounded-lg p-4 shadow-sm hover:shadow-lg transition-all duration-200 cursor-move group
-    ${job.status === 'archived'
-      ? 'bg-gray-100 dark:bg-gray-900 opacity-60 border-gray-200 dark:border-gray-800'
-      : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'}
-  `}
-  draggable
-  onDragStart={() => onDragStart(index)}
-  onDragEnter={() => onDragEnter(index)}
-  onDragOver={onDragOver}
-  onDrop={onDrop}
-  onDragEnd={onDragEnd}
->
-  <div className="flex justify-between items-start flex-wrap gap-4">
-    <div className="flex-grow">
-      <Link to={`/jobs/${job.id}`} className="no-underline">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-          {job.title}
-        </h2>
-      </Link>
-      <div className="mt-2 flex items-center flex-wrap gap-x-4 gap-y-2">
-        <span
-          className={`capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-            ${job.status === 'active'
-              ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300'
-              : 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300'}
-          `}
-        >
-          {job.status}
-        </span>
-        <div className="flex flex-wrap gap-2">
-          {job.tags.map((tag) => (
-            <span
-              key={tag}
-              className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-semibold px-2.5 py-0.5 rounded-full"
+    <div
+      className={`group relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 cursor-move ${
+        job.status === 'archived' ? 'opacity-60' : 'hover:-translate-y-1'
+      }`}
+      draggable
+      onDragStart={(e) => {
+        e.stopPropagation();
+        onDragStart(index);
+      }}
+      onDragEnter={(e) => {
+        e.stopPropagation();
+        onDragEnter(index);
+      }}
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onDragOver(e);
+      }}
+      onDrop={(e) => {
+        e.stopPropagation();
+        onDrop();
+      }}
+    >
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center space-x-4">
+          <div className={`w-12 h-12 rounded-xl ${getJobColor(job.title)} flex items-center justify-center text-white font-bold text-xl shadow-sm`}>
+            {getJobInitial(job.title)}
+          </div>
+          <div>
+            <Link to={`/jobs/${job.id}`} className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <h3 className="hover:underline">
+                {job.title}
+              </h3>
+            </Link>
+            <p className="text-gray-600 dark:text-gray-400 font-medium">
+              <span className="flex items-center gap-1">
+                <MapPin className="w-4 h-4 text-gray-400" />
+                {job.location}
+              </span>
+            </p>
+          </div>
+        </div>
+        
+        <div className="relative">
+            <button
+                onClick={(e) => handleActionClick(e, () => onEdit(job))}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                aria-label="Edit Job"
             >
-              {tag}
-            </span>
-          ))}
+                <MoreHorizontal className="w-5 h-5 text-gray-500" />
+            </button>
         </div>
       </div>
+
+      <div className="space-y-4">
+        {job.salary && (
+          <div className="flex items-center space-x-2 text-lg font-bold text-gray-900 dark:text-white">
+            <DollarSign className="w-5 h-5 text-green-500" />
+            <span>${Math.round(job.salary.min / 1000)}k - ${Math.round(job.salary.max / 1000)}k</span>
+            <span className="text-sm font-normal text-gray-500 dark:text-gray-400">/ year</span>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex items-center space-x-4">
+                <span className="flex items-center space-x-1.5">
+                    <BarChart2 className="w-4 h-4" />
+                    <span>{`${(job.experience as any)?.min}-${(job.experience as any)?.max} Years`}</span>
+                </span>
+                <span className="flex items-center space-x-1.5">
+                    <Clock className="w-4 h-4" />
+                    <span>{job.jobType}</span>
+                </span>
+            </div>
+             <div className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles[job.status]}`}>
+               {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+             </div>
+        </div>
+
+
+        {job.tags && job.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 pt-2">
+            {job.tags.slice(0, 3).map((tag) => (
+              <span 
+                key={tag} 
+                className="inline-flex items-center px-2.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
+            {job.tags.length > 3 && (
+              <span className="inline-flex items-center px-2.5 py-1 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-medium rounded-full">
+                +{job.tags.length - 3} more
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Posted Time & Actions */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Posted {(job as any).createdAt ? new Date((job as any).createdAt).toLocaleDateString() : 'recently'}
+          </p>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={(e) => handleActionClick(e, () => onArchive(job.id, job.status))}
+              className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200 ${
+                job.status === 'active' 
+                  ? 'bg-orange-500 hover:bg-orange-600 hover:shadow-md' 
+                  : 'bg-green-500 hover:bg-green-600 hover:shadow-md'
+              }`}
+            >
+              {job.status === 'active' ? 'Archive' : 'Activate'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute inset-0 bg-blue-50 dark:bg-blue-900/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none -z-10"></div>
     </div>
-    <div className="flex items-center gap-2 flex-shrink-0">
-      <button
-        onClick={handleEditClick}
-        className="bg-gray-400 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-100 font-medium py-1 px-3 rounded-md border border-gray-300 dark:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-600"
-      >
-        Edit
-      </button>
-      <button
-        onClick={handleArchiveClick}
-        className={`px-3 py-1.5 text-sm font-semibold text-white rounded-md transition-colors ${
-          job.status === 'active'
-            ? 'bg-yellow-500 dark:bg-yellow-600 hover:bg-yellow-600 dark:hover:bg-yellow-500'
-            : 'bg-gray-400 dark:bg-green-700 hover:bg-green-600 dark:hover:bg-green-600'
-        }`}
-      >
-        {job.status === 'active' ? 'Archive' : 'Activate'}
-      </button>
-    </div>
-  </div>
-</div>
   );
 };
 
 export default JobItem;
+

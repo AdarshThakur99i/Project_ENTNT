@@ -2,6 +2,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 * {
   transition: all 0.2s ease-in-out;
+  
 }
 @layer utilities {
   .drag-area * {
@@ -18,12 +19,13 @@ button,
 
 
 :root {
+
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
   color: #213547;
-  background-color: #ffffff;
+  background-color: white;
 }
 .kanban-board * {
   transition: none !important;
@@ -33,7 +35,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: white;
+background-color: #f9fafb;
   color: #213547;
 }
 

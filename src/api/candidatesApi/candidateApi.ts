@@ -1,6 +1,6 @@
 import type { Candidate } from '../../data/CandidatesFunctions/mockCandidates';
 
-
+import {db} from '../../data/database/db'
 export async function fetchCandidatesForJob(jobId: number, stageFilter: string | 'all'): Promise<Candidate[]> {
   const response = await fetch(`/api/jobs/${jobId}/candidates?stage=${stageFilter}`);
   if (!response.ok) {
@@ -8,7 +8,15 @@ export async function fetchCandidatesForJob(jobId: number, stageFilter: string |
   }
   return response.json();
 }
-
+export async function fetchCandidates(params: { page: number; pageSize: number }): Promise<{ data: Candidate[]; totalCount: number }> {
+  const totalCount = await db.candidates.count();
+  const data = await db.candidates
+    .offset((params.page - 1) * params.pageSize)
+    .limit(params.pageSize)
+    .toArray();
+  
+  return { data, totalCount };
+}
 /**
  * Fetches a single candidate by their unique ID.
  */

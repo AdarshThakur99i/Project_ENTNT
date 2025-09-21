@@ -1,25 +1,50 @@
 import { db } from './db';
-import type { Job } from '@/data/JobsData/Jobs.types'; 
 import { generateSeedCandidates } from '../../data/CandidatesFunctions/mockCandidates';
 import type { Assessment } from '../../data/AssessmentFunctions/assessment';
+import type { Job, JobType, Salary, Experience, JobStatus } from '@/data/JobsData/Jobs.types';
 
-const TAG_POOL = ['React', 'TypeScript', 'Node.js', 'Remote', 'Full-time', 'GraphQL', 'CSS', 'Senior', 'JavaScript', 'Mid-Level', 'Contract'];
+const TAG_POOL = ['React', 'TypeScript', 'Node.js', 'Remote', 'GraphQL', 'CSS', 'Senior', 'JavaScript', 'Mid-Level', 'Contract', 'Vue', 'Angular', 'AWS'];
 
 function generateRandomJobs(): Omit<Job, 'id'>[] {
   const jobs: Omit<Job, 'id'>[] = [];
-  const titles = ['Software Engineer', 'Frontend Developer', 'Backend Engineer', 'Full-Stack Developer', 'DevOps Specialist','Data Analyst'];
+  const titles = ['Software Engineer', 'Product Designer', 'Frontend Developer', 'Data Analyst', 'UX Designer', 'Marketing Manager'];
+  const companies = ['Innovate Inc.', 'DataCorp', 'CloudSphere', 'QuantumLeap', 'NextGen Solutions', 'Synergy Systems'];
+  const locations = ['Chicago, IL', 'New York, NY', 'San Francisco, CA', 'Austin, TX', 'Remote'];
+  const jobTypes: JobType[] = ['Full-Time', 'Part-Time', 'Contract', 'Internship'];
   const totalJobs = 25;
+  const statuses: JobStatus[] = ['active', 'active', 'active', 'archived', 'inactive'];
 
   for (let i = 1; i <= totalJobs; i++) {
-    const title = `${titles[i % titles.length]} #${Math.floor(i / 5) + 1}`;
-    const status = Math.random() > 0.3 ? 'active' : 'archived';
-    const randomTags = TAG_POOL.sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 2) + 2);
+    const salaryMin = Math.floor(Math.random() * 40 + 50) * 1000; 
+    const salary: Salary = {
+      min: salaryMin,
+      max: salaryMin + Math.floor(Math.random() * 20 + 5) * 1000,
+      currency: 'USD',
+      period: 'annually'
+    };
+    
+   
+    const expMin = Math.floor(Math.random() * 5); 
+    const experience: Experience = {
+      min: expMin,
+      max: expMin + Math.floor(Math.random() * 3 + 2), 
+    };
+    
+    const postedDate = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString();
+    
+    const randomTags = TAG_POOL.sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 3) + 2);
 
     jobs.push({
-      title,
-      status,
+      title: titles[i % titles.length],
+      status: statuses[i % statuses.length],
       tags: randomTags,
-      order: i
+      order: i,
+      company: companies[i % companies.length],
+      location: locations[i % locations.length],
+      jobType: jobTypes[i % jobTypes.length],
+      experience,
+      salary,
+      postedDate,
     });
   }
   return jobs;
@@ -63,12 +88,11 @@ export async function seedDatabase() {
   const candidateCount = await db.candidates.count();
   const assessmentCount = await db.assessments.count();
 
- 
   if (jobCount === 0 && candidateCount === 0 && assessmentCount === 0) {
     console.log("Seeding database with initial data...");
     
     const initialJobs = generateRandomJobs();
-    await db.jobs.bulkAdd(initialJobs);
+    await db.jobs.bulkAdd(initialJobs as Job[]);
     console.log(` ${initialJobs.length} jobs seeded.`);
 
     const totalJobs = initialJobs.length;
@@ -83,4 +107,3 @@ export async function seedDatabase() {
     console.log("Database seeded successfully.");
   }
 }
-
