@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; 
 import type { Job, JobStatus } from '@/data/JobsData/Jobs.types';
-import { MapPin, Clock, DollarSign, BarChart2, MoreHorizontal } from 'lucide-react';
+import { MapPin, Clock, DollarSign, BarChart2 } from 'lucide-react';
 
 interface JobItemProps {
   job: Job;
@@ -89,10 +89,10 @@ const JobItem: React.FC<JobItemProps> = ({ job, index, onArchive, onEdit, onDrag
         <div className="relative">
             <button
                 onClick={(e) => handleActionClick(e, () => onEdit(job))}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors opacity-100 group-hover:opacity-100"
                 aria-label="Edit Job"
-            >
-                <MoreHorizontal className="w-5 h-5 text-gray-500" />
+            >Edit
+             
             </button>
         </div>
       </div>

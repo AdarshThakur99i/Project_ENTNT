@@ -64,7 +64,6 @@ export async function patchJob(jobId: number, updates: Partial<Job>): Promise<Jo
   return response.json();
 }
 
-// ✅ THIS IS THE REORDER API FUNCTION
 // Saves the new order of jobs.
 export async function saveJobOrder(reorderedJobs: Job[]): Promise<void> {
   const response = await fetch('/api/jobs/reorder', {

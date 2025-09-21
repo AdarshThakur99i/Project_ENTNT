@@ -38,7 +38,7 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialDat
     }
   }, [initialData, isOpen]);
   
-  // ✅ FIX: This function is now fully type-safe to handle both top-level and nested properties.
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
@@ -46,7 +46,6 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialDat
       if (name.includes('.')) {
         const [key, subkey] = name.split('.') as ['experience' | 'salary', 'min' | 'max'];
         
-        // Ensure the nested object is not undefined before spreading
         const nestedObject = prev[key] || {};
 
         return {
@@ -61,7 +60,6 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialDat
     });
   };
 
-  // ✅ FIX: Type-safe handler for toggling tags.
   const handleTagToggle = (tag: string) => {
     setFormData(prev => ({
         ...prev,
