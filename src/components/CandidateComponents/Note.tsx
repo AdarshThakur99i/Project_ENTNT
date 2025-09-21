@@ -14,7 +14,7 @@ const Note: React.FC<NoteProps> = ({ text, timestamp, onDelete }) => {
     return parts.map((part, index) => {
       if (index % 3 === 1) {
         return (
-          <span key={index} className="font-semibold bg-blue-100 text-blue-800 rounded px-1 py-0.5">
+          <span key={index} className="font-semibold bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 rounded px-1 py-0.5">
             @{part}
           </span>
         );
@@ -29,14 +29,15 @@ const Note: React.FC<NoteProps> = ({ text, timestamp, onDelete }) => {
   return (
     <div className="group flex items-start gap-4 p-4">
      
-      <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-1">
+      <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-1">
         HR
       </div>
-      <div className="flex-grow bg-white p-4 rounded-lg border border-gray-200 transition-shadow duration-200 hover:shadow-md relative">
-       
+
+      <div className="flex-grow bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 transition-shadow duration-200 hover:shadow-md relative">
+        
         <button
           onClick={onDelete}
-          className="absolute top-3 right-3 p-1.5 rounded-full text-gray-400 bg-red-500 hover:bg-red-50 hover:text-red-600 opacity-100 group-hover:opacity-100 transition-all"
+          className="absolute top-2 right-2 p-1.5 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-100 dark:hover:bg-red-900/50 hover:text-red-600 dark:hover:text-red-400 opacity-100 group-hover:opacity-100 transition-all"
           aria-label="Delete note"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -45,8 +46,8 @@ const Note: React.FC<NoteProps> = ({ text, timestamp, onDelete }) => {
         </button>
 
         <div className="flex items-center mb-1">
-            <p className="font-semibold text-sm text-gray-800">HR Team</p>
-            <p className="text-xs text-gray-400 ml-2">
+            <p className="font-semibold text-sm text-gray-800 dark:text-gray-100">HR Team</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 ml-2">
               {new Date(timestamp).toLocaleString('en-IN', {
                 dateStyle: 'medium',
                 timeStyle: 'short',
@@ -54,7 +55,7 @@ const Note: React.FC<NoteProps> = ({ text, timestamp, onDelete }) => {
             </p>
         </div>
         
-        <p className="text-gray-700 whitespace-pre-wrap">{renderTextWithMentions(text)}</p>
+        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{renderTextWithMentions(text)}</p>
       </div>
     </div>
   );

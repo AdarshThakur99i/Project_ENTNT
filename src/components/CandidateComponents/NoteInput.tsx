@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
 import { MENTIONABLE_USERS } from '../../data/CandidatesFunctions/mockUsers';
-import './mentionStyles.css';
+import './mentionStyles.css'; 
 
 interface NoteInputProps {
   onSave: (noteText: string) => void;
@@ -24,16 +24,17 @@ const NoteInput: React.FC<NoteInputProps> = ({ onSave }) => {
 
   return (
     <div className="flex items-start gap-4 p-4">
-        <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-1">
+        {/* ✅ ADDED: Dark mode styles for the avatar */}
+        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-1">
           HR
         </div>
         <div className="flex-grow flex items-start gap-2">
-            <div className="flex-grow bg-white p-2 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex-grow bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                 <MentionsInput
                   value={text}
                   onChange={(event) => setText(event.target.value)}
                   placeholder="Add a note... mention a user with @"
-                  className="mentions"
+                  className="mentions" 
                 >
                   <Mention
                     trigger="@"
@@ -48,7 +49,6 @@ const NoteInput: React.FC<NoteInputProps> = ({ onSave }) => {
               className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-md shadow-sm hover:shadow-md hover:from-blue-700 hover:to-indigo-700 transition-all flex-shrink-0 mt-1"
             >
               Save
-              
             </button>
         </div>
     </div>
@@ -56,4 +56,3 @@ const NoteInput: React.FC<NoteInputProps> = ({ onSave }) => {
 };
 
 export default NoteInput;
-
