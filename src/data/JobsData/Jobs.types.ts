@@ -26,6 +26,9 @@ export interface Job {
   status: JobStatus;
   tags: string[];
   order: number;
-
-  [key: string]: unknown;
+  
+  [key: string]: any;
 }
+
+export type JobFormData = Omit<Job, 'id' | 'postedDate'>;
+

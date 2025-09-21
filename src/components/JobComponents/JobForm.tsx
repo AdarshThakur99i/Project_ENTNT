@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { Job } from '@/data/JobsData/Jobs.types';
+import type { Job, JobFormData } from '@/data/JobsData/Jobs.types';
 
 interface JobFormProps {
   isOpen: boolean;
@@ -8,9 +8,6 @@ interface JobFormProps {
   initialData: Job | null;
   allTags: string[];
 }
-
-// Use a specific, non-exported type for the form's state for clarity
-type JobFormData = Omit<Job, 'id' | 'postedDate'>;
 
 const defaultFormData: JobFormData = {
   title: '',
@@ -31,42 +28,45 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialDat
     if (isOpen) {
       if (initialData) {
         const { id, postedDate, ...initialFormData } = initialData;
-        setFormData(initialFormData);
+        setFormData({
+            ...defaultFormData, // Ensure all keys are present
+            ...initialFormData
+        });
       } else {
         setFormData(defaultFormData);
       }
     }
   }, [initialData, isOpen]);
   
-  // ✅ FIX: This function is now fully type-safe.
+  // ✅ FIX: This function is now fully type-safe to handle both top-level and nested properties.
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
     setFormData(prev => {
-      // Handles nested objects like 'experience.min' or 'salary.max'
       if (name.includes('.')) {
         const [key, subkey] = name.split('.') as ['experience' | 'salary', 'min' | 'max'];
         
+        // Ensure the nested object is not undefined before spreading
+        const nestedObject = prev[key] || {};
+
         return {
           ...prev,
           [key]: {
-            ...prev[key], // Spread the existing nested object
-            [subkey]: Number(value) || 0 // Coerce to number, fallback to 0
+            ...nestedObject,
+            [subkey]: Number(value) || 0
           }
         };
       }
-      
-      // Handles top-level properties like 'title'
       return { ...prev, [name]: value };
     });
   };
 
-  // ✅ FIX: This function is also now fully type-safe.
+  // ✅ FIX: Type-safe handler for toggling tags.
   const handleTagToggle = (tag: string) => {
     setFormData(prev => ({
         ...prev,
         tags: prev.tags.includes(tag)
-            ? prev.tags.filter(t => t !== tag)
+            ? prev.tags.filter((t: string) => t !== tag)
             : [...prev.tags, tag]
     }));
   };
@@ -100,7 +100,6 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialDat
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Form fields remain the same... */}
           <div>
             <label className="block text-sm font-bold mb-2" htmlFor="title">Job Title</label>
             <input id="title" name="title" type="text" value={formData.title} onChange={handleChange} required className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" />
@@ -180,3 +179,4 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialDat
 };
 
 export default JobForm;
+
