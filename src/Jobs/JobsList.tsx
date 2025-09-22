@@ -25,8 +25,9 @@ const JobsList: React.FC = () => {
     handleDragEnter,
     handleDragOver,
     handleDrop,
+handleDragEnd,
     handlePageChange,
-    handleSortChange,
+    handleSortChange
   } = useJobs();
 
   useEffect(() => {
@@ -203,6 +204,7 @@ const JobsList: React.FC = () => {
                       onDragEnter={handleDragEnter}
                       onDragOver={handleDragOver}
                       onDrop={handleDrop}
+                     onDragEnd={handleDragEnd}
                     />
                   </div>
                 ))}

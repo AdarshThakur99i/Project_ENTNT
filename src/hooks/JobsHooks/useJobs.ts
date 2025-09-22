@@ -111,8 +111,8 @@ export const useJobs = () => {
     }
   }, [jobs]);
 
-  const { handleDragStart, handleDragEnter, handleDragOver, handleDrop } = 
-    useDragAndDrop(jobs, handleReorderJobs);
+  const { handleDragStart, handleDragEnter, handleDragOver, handleDrop, handleDragEnd } = // <-- ADD handleDragEnd HERE
+    useDragAndDrop(jobs, handleReorderJobs);
 
   const handleArchive = useCallback(async (id: number, currentStatus: JobStatus) => {
     const originalJobs = [...jobs];
@@ -152,6 +152,7 @@ export const useJobs = () => {
     handleDragEnter,
     handleDragOver,
     handleDrop,
+handleDragEnd
   };
 };
 

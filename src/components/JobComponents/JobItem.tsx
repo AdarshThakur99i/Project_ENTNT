@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 import type { Job, JobStatus } from '@/data/JobsData/Jobs.types';
 import { MapPin, Clock, DollarSign, BarChart2 } from 'lucide-react';
 
@@ -12,10 +12,22 @@ interface JobItemProps {
   onDragEnter: (index: number) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: () => void;
+  // Add the onDragEnd prop for robust cleanup
+  onDragEnd: () => void;
 }
 
-const JobItem: React.FC<JobItemProps> = ({ job, index, onArchive, onEdit, onDragStart, onDragEnter, onDragOver, onDrop }) => {
-
+const JobItem: React.FC<JobItemProps> = ({
+  job,
+  index,
+  onArchive,
+  onEdit,
+  onDragStart,
+  onDragEnter,
+  onDragOver,
+  onDrop,
+  // Destructure the new prop
+  onDragEnd,
+}) => {
   const handleActionClick = (e: React.MouseEvent, action: () => void) => {
     e.stopPropagation();
     e.preventDefault();
@@ -65,6 +77,8 @@ const JobItem: React.FC<JobItemProps> = ({ job, index, onArchive, onEdit, onDrag
         e.stopPropagation();
         onDrop();
       }}
+      // Attach the onDragEnd handler to the draggable element
+      onDragEnd={onDragEnd}
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-4">
@@ -87,25 +101,24 @@ const JobItem: React.FC<JobItemProps> = ({ job, index, onArchive, onEdit, onDrag
         </div>
         
         <div className="relative">
-           <button
-  onClick={(e) => handleActionClick(e, () => onEdit(job))}
-  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md shadow-sm transition-colors duration-200 ease-in-out group opacity-100 group-hover:opacity-100"
-  aria-label="Edit Job"
->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-4 h-4"
-    aria-hidden="true"
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.25 2.25 0 113.182 3.182L7.5 19.313l-4.5 1.125 1.125-4.5L16.862 3.487z" />
-  </svg>
-  Edit
-</button>
-
+            <button
+                onClick={(e) => handleActionClick(e, () => onEdit(job))}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md shadow-sm transition-colors duration-200 ease-in-out group opacity-100 group-hover:opacity-100"
+                aria-label="Edit Job"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.25 2.25 0 113.182 3.182L7.5 19.313l-4.5 1.125 1.125-4.5L16.862 3.487z" />
+                </svg>
+                Edit
+            </button>
         </div>
       </div>
 
@@ -122,18 +135,17 @@ const JobItem: React.FC<JobItemProps> = ({ job, index, onArchive, onEdit, onDrag
             <div className="flex items-center space-x-4">
                 <span className="flex items-center space-x-1.5">
                     <BarChart2 className="w-4 h-4" />
-                    <span>{`${(job.experience as any)?.min}-${(job.experience as any)?.max} Years`}</span>
+                    <span>{`${(job.experience as any)?.min ?? 'N/A'}-${(job.experience as any)?.max ?? 'N/A'} Years`}</span>
                 </span>
                 <span className="flex items-center space-x-1.5">
                     <Clock className="w-4 h-4" />
                     <span>{job.jobType}</span>
                 </span>
             </div>
-             <div className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles[job.status]}`}>
-               {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-             </div>
+             <div className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles[job.status] || 'border-gray-200'}`}>
+                {job.status ? job.status.charAt(0).toUpperCase() + job.status.slice(1) : 'No Status'}
+            </div>
         </div>
-
 
         {job.tags && job.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 pt-2">
@@ -153,7 +165,6 @@ const JobItem: React.FC<JobItemProps> = ({ job, index, onArchive, onEdit, onDrag
           </div>
         )}
 
-        {/* Posted Time & Actions */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
           <p className="text-xs text-gray-500 dark:text-gray-400">
             Posted {(job as any).createdAt ? new Date((job as any).createdAt).toLocaleDateString() : 'recently'}
@@ -179,4 +190,3 @@ const JobItem: React.FC<JobItemProps> = ({ job, index, onArchive, onEdit, onDrag
 };
 
 export default JobItem;
-

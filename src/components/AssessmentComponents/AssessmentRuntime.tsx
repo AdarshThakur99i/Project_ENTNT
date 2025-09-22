@@ -1,3 +1,4 @@
+//this file is for candidate view . for future purposes.
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
