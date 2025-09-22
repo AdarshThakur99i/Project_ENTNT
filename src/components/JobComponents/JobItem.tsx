@@ -87,13 +87,25 @@ const JobItem: React.FC<JobItemProps> = ({ job, index, onArchive, onEdit, onDrag
         </div>
         
         <div className="relative">
-            <button
-                onClick={(e) => handleActionClick(e, () => onEdit(job))}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors opacity-100 group-hover:opacity-100"
-                aria-label="Edit Job"
-            >Edit
-             
-            </button>
+           <button
+  onClick={(e) => handleActionClick(e, () => onEdit(job))}
+  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md shadow-sm transition-colors duration-200 ease-in-out group opacity-100 group-hover:opacity-100"
+  aria-label="Edit Job"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="w-4 h-4"
+    aria-hidden="true"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.25 2.25 0 113.182 3.182L7.5 19.313l-4.5 1.125 1.125-4.5L16.862 3.487z" />
+  </svg>
+  Edit
+</button>
+
         </div>
       </div>
 

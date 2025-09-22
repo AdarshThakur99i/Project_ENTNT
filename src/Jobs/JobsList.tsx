@@ -92,9 +92,7 @@ const JobsList: React.FC = () => {
                       {showFilters ? 'Hide Filters' : 'Show Filters'}
                     </span>
                   </button>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition-colors">
-                    Search
-                  </button>
+                  
                 </div>
               </div>
             </div>
