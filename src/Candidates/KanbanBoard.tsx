@@ -92,7 +92,7 @@ const KanbanBoard: React.FC = () => {
 
   if (isLoading) {
       return (
-        <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">
+        <div className="h-screen flex items-center justify-center bg-neutral-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">
             <div className="animate-pulse text-center">
                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-4 mx-auto"></div>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-64 mx-auto"></div>
@@ -103,8 +103,8 @@ const KanbanBoard: React.FC = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col  bg-gray-50 dark:bg-gray-900">
-      <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div className="h-screen flex flex-col  bg-neutral-50 dark:bg-gray-900">
+      <div className="flex-shrink-0 bg-neutral-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-6 py-4">
             <div className="flex justify-between items-center flex-wrap gap-4">
               <div>

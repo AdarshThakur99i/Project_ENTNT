@@ -52,7 +52,7 @@ const HomePage: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white relative overflow-hidden transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br bg-neutral-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white relative overflow-hidden transition-colors duration-300">
       <GlobalStyles />
 
       <nav className="relative z-20 max-w-7xl mx-auto px-6 py-6">

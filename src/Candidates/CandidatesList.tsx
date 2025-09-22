@@ -44,7 +44,7 @@ const CandidatesList: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-neutral-50 dark:bg-gray-900">
       <div className="max-w-5xl mx-auto px-6 py-12">
       
         <div className="mb-6">
