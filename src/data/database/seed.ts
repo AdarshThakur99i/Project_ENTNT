@@ -8,7 +8,7 @@ const TAG_POOL = ['React', 'TypeScript', 'Node.js', 'Remote', 'GraphQL', 'CSS', 
 function generateRandomJobs(): Omit<Job, 'id'>[] {
   const jobs: Omit<Job, 'id'>[] = [];
   const titles = ['Software Engineer', 'Product Designer', 'Frontend Developer', 'Data Analyst', 'UX Designer', 'Marketing Manager'];
-  const companies = ['Innovate Inc.', 'DataCorp', 'CloudSphere', 'QuantumLeap', 'NextGen Solutions', 'Synergy Systems'];
+  const companies = ['TalentFlow'];
   const locations = ['Chicago, IL', 'New York, NY', 'San Francisco, CA', 'Austin, TX', 'Remote'];
   const jobTypes: JobType[] = ['Full-Time', 'Part-Time', 'Contract', 'Internship'];
   const totalJobs = 25;
