@@ -13,7 +13,7 @@ export class MyDatabase extends Dexie {
     super('MyMockDatabase');
     
    
-    this.version(4).stores({
+    this.version(5).stores({
       jobs: '++id, title, status, order',
       candidates: '++id, jobId, currentStage, *name, email', 
       assessments: '++id, jobId',

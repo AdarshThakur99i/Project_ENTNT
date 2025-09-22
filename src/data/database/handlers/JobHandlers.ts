@@ -70,7 +70,6 @@ export const jobsHandlers = [
                     valA = a[sortBy as keyof Job] as any;
                     valB = b[sortBy as keyof Job] as any;
             }
-
             // The actual comparison logic
             if (valA === undefined || valB === undefined) return 0;
             if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
@@ -85,7 +84,7 @@ export const jobsHandlers = [
     // Pagination
     const totalCount = allJobs.length;
     const paginatedData = allJobs.slice((page - 1) * pageSize, page * pageSize);
-    
+
     return HttpResponse.json({ data: paginatedData, totalCount });
   }),
 

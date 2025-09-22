@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import * as jobsApi from '../api/JobsApi/JobsApi';
 import type { Job } from '@/data/JobsData/Jobs.types';
 import { Briefcase, MapPin, Calendar, ArrowLeft, Users, FileText, Trash2, AlertTriangle } from 'lucide-react';
-
+//  better if we use useJobs here rather than direct api calls. so i might update this small inconsistency
 const JobDetails: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
@@ -92,7 +92,7 @@ const JobDetails: React.FC = () => {
             <p className="font-bold text-lg text-gray-800 dark:text-gray-200 capitalize">{job.status}</p>
         </div>
       </div>
-      
+    
       {/* Action Cards */}
       <div className="grid md:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-shadow group">
@@ -107,7 +107,7 @@ const JobDetails: React.FC = () => {
         </div>
       </div>
 
-      {/* Danger Zone */}
+      
       <div className="mt-16 pt-6 border-t border-gray-200 dark:border-gray-700">
         <h3 className="text-lg font-semibold text-red-700 dark:text-red-400">Danger Zone</h3>
         {!showDeleteConfirm ? (
