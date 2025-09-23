@@ -5,7 +5,7 @@ import type { Job, JobType, JobStatus } from '@/data/JobsData/Jobs.types';
 
 const JOBS_PER_PAGE = 5;
 
-export const useJobs = (refreshTrigger: number = 0) => { // Add refreshTrigger parameter
+export const useJobs = (refreshTrigger: number = 0) => { 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [allTags, setAllTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -65,18 +65,31 @@ export const useJobs = (refreshTrigger: number = 0) => { // Add refreshTrigger p
     fetchAndSetJobs();
   }, [fetchAndSetJobs]);
 
-  const handleCreateJob = useCallback(async (formData: Omit<Job, 'id'>) => {
+ 
+const handleCreateJob = useCallback(async (formData: Omit<Job, 'id'>) => {
+  try {
     await jobsApi.createJob(formData);
     setCurrentPage(1);
     setFilters({ search: '', status: 'all', tags: [], jobType: [], experience: 'all' });
     refetchJobs();
     setShowCreatePopup(true);
-  }, [refetchJobs]);
+  } catch (error: any) {
+    console.error("Failed to create job:", error);
+    alert((error as Error).message);
+  }
+}, [refetchJobs]);
 
-  const handleUpdateJob = useCallback(async (formData: Job) => {
+const handleUpdateJob = useCallback(async (formData: Job) => {
+  try {
     await jobsApi.updateJob(formData.id, formData);
-    refetchJobs();
-  }, [refetchJobs]);
+    refetchJobs(); 
+  } catch (error: any) {
+    console.error("Failed to update job:", error);
+   alert((error as Error).message);
+
+
+  }
+}, [refetchJobs]);
 
   const handleFilterChange = useCallback(<K extends keyof JobFilters>(
     filterName: K,
@@ -110,6 +123,7 @@ export const useJobs = (refreshTrigger: number = 0) => { // Add refreshTrigger p
       await jobsApi.saveJobOrder(updatedListWithOrder);
     } catch (error) {
       console.error("Failed to save new order:", error);
+      alert((error as Error).message);
       setJobs(originalJobs);
     }
   }, [jobs]);
@@ -130,6 +144,7 @@ export const useJobs = (refreshTrigger: number = 0) => { // Add refreshTrigger p
       await jobsApi.patchJob(id, { status: newStatus });
     } catch (error) {
       console.error("Failed to update job status:", error);
+      alert((error as Error).message);
       setJobs(originalJobs);
     }
   }, [jobs]);

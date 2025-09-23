@@ -12,7 +12,6 @@ interface JobItemProps {
   onDragEnter: (index: number) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: () => void;
-  // Add the onDragEnd prop for robust cleanup
   onDragEnd: () => void;
 }
 

@@ -1,15 +1,27 @@
 import type { Job, JobType } from "@/data/JobsData/Jobs.types";
 
+/**
+ * Throws an error randomly to simulate API failures for testing rollbacks.
+ * @param {number} failureRate - The chance of failure, e.g., 0.05 for 5%.
+ */
+const simulateError = (failureRate = 0.05) => {
+  if (Math.random() < failureRate) {
+    console.warn(`SIMULATING ${failureRate * 100}% API ERROR `);
+    throw new Error('failed! intentional 5% error to test roll back features');
+  }
+};
+
+
 interface FetchJobsParams {
   page: number;
   pageSize: number;
   search?: string;
   status?: string;
   tags?: string[];
-  jobType?: JobType[]; 
+  jobType?: JobType[];
   experience?: string;
-  sortBy?: string;      
-  sortOrder?: 'asc' | 'desc'; 
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
 export async function fetchJobs(params: FetchJobsParams): Promise<{ data: Job[]; totalCount: number }> {
@@ -25,14 +37,30 @@ export async function fetchJobs(params: FetchJobsParams): Promise<{ data: Job[];
   if (params.experience && params.experience !== 'all') queryParams.append('experience', params.experience);
   if (params.sortBy) queryParams.append('sortBy', params.sortBy);
   if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
-  
+
   const response = await fetch(`/api/jobs?${queryParams.toString()}`);
   if (!response.ok) throw new Error('Failed to fetch jobs');
   return response.json();
 }
 
-// Creates a new job
+export async function fetchTags(): Promise<string[]> {
+  const response = await fetch('/api/tags');
+  if (!response.ok) throw new Error('Failed to fetch tags');
+  return response.json();
+}
+
+export async function fetchJobById(jobId: number): Promise<Job> {
+  const response = await fetch(`/api/jobs/${jobId}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch job with ID ${jobId}`);
+  }
+  return response.json();
+}
+
+
+
 export async function createJob(jobData: Omit<Job, 'id'>): Promise<Job> {
+  simulateError();
   const response = await fetch('/api/jobs', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -42,8 +70,8 @@ export async function createJob(jobData: Omit<Job, 'id'>): Promise<Job> {
   return response.json();
 }
 
-// Fully updates a job (using PUT)
 export async function updateJob(jobId: number, jobData: Job): Promise<Job> {
+  simulateError();
   const response = await fetch(`/api/jobs/${jobId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -53,8 +81,8 @@ export async function updateJob(jobId: number, jobData: Job): Promise<Job> {
   return response.json();
 }
 
-// Partially updates a job (using PATCH)
 export async function patchJob(jobId: number, updates: Partial<Job>): Promise<Job> {
+  simulateError();
   const response = await fetch(`/api/jobs/${jobId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -64,8 +92,8 @@ export async function patchJob(jobId: number, updates: Partial<Job>): Promise<Jo
   return response.json();
 }
 
-// Saves the new order of jobs.
 export async function saveJobOrder(reorderedJobs: Job[]): Promise<void> {
+  simulateError();
   const response = await fetch('/api/jobs/reorder', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -77,21 +105,8 @@ export async function saveJobOrder(reorderedJobs: Job[]): Promise<void> {
   }
 }
 
-// Fetches all unique tags
-export async function fetchTags(): Promise<string[]> {
-  const response = await fetch('/api/tags');
-  if (!response.ok) throw new Error('Failed to fetch tags');
-  return response.json();
-}
-export async function fetchJobById(jobId: number): Promise<Job> {
-  const response = await fetch(`/api/jobs/${jobId}`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch job with ID ${jobId}`);
-  }
-  return response.json();
-}
-
 export async function deleteJob(jobId: number): Promise<void> {
+  simulateError();
   const response = await fetch(`/api/jobs/${jobId}`, {
     method: 'DELETE',
   });
