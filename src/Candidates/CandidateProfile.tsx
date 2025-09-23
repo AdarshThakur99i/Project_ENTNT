@@ -83,7 +83,7 @@ const CandidateProfile: React.FC = () => {
       </div>
 
      
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mb-12">
+      <div className="bg-neutral-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mb-12">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{candidate.name}</h1>
         <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">{candidate.email}</p>
         <p className="mt-4 text-gray-700 dark:text-gray-300">
