@@ -286,8 +286,7 @@ hosted on vercel.
 
 ### Drag-and-Drop Scope
 - Drag-and-drop functionality works only within the same page or route.
-- Attempting to drag elements across different views (e.g., from `/jobs` to `/candidates`) will not register a valid drop target.
-- This behavior is **not covered in the PDF tutorial**, so users should be aware of this constraint when designing workflows.
+- Attempting to drag elements across different pages (1 to 4) will not register a valid drop target.
 
 ###  Tag Creation
 - Users can **select from existing tags**, but **cannot create new tags** dynamically within the UI.
