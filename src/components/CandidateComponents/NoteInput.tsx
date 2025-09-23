@@ -24,7 +24,6 @@ const NoteInput: React.FC<NoteInputProps> = ({ onSave }) => {
 
   return (
     <div className="flex items-start gap-4 p-4">
-        {/* ✅ ADDED: Dark mode styles for the avatar */}
         <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-1">
           HR
         </div>

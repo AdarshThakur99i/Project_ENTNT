@@ -82,7 +82,7 @@ const CandidateProfile: React.FC = () => {
         <Link to={`/jobs/${jobId}/candidates/kanbanview`} className="text-blue-600 dark:text-blue-400 hover:underline">Back to Kanban</Link>
       </div>
 
-      {/* ✅ UPDATED with dark mode styles */}
+     
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mb-12">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{candidate.name}</h1>
         <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">{candidate.email}</p>
@@ -97,7 +97,7 @@ const CandidateProfile: React.FC = () => {
       <div className="mb-12">
         <h2 className="text-2xl font-semibold mb-8 border-b border-gray-200 dark:border-gray-700 pb-2 text-gray-900 dark:text-white">Timeline</h2>
         <div className="relative pt-2">
-          {/* ✅ UPDATED with dark mode styles */}
+         
           <div className="absolute left-0 top-4 h-1 w-full bg-blue-200 dark:bg-gray-700 rounded-full"></div>
           <div className="relative flex justify-between">
             {candidate.stageHistory.map((entry, index) => (
