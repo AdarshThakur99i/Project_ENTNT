@@ -1,7 +1,15 @@
-FOR USERS :
-Usage tutorial  :
-Website Link : https://talentflow-nine.vercel.app/
 
+TalentFlow is a mini hiring platform built with React that enables HR teams to manage jobs, candidates, and assessments—all without a backend. It supports drag-and-drop reordering, virtualized lists, live assessment previews, and offline persistence using IndexedDB.
+
+ Usage Tutorial 
+ YouTube Link:[Watch Tutorial – Mini Hiring Manager Platform](https://youtu.be/AP5C3zZmbfQ)
+
+
+ Deployed Link :
+[Live App – TalentFlow](https://talentflow-nine.vercel.app/)
+
+
+IMPORTANT - To clear IndexedDB and reset app data, open DevTools → Application tab → IndexedDB → right-click the database → Delete. Then refresh the page to see changes.
 # FOR DEVELOPERS
 
 ## TECH STACK USED
