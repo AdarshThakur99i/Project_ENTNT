@@ -279,3 +279,20 @@ Artificial latency and artificial error has also been added in job apis to test 
 
 hosted on vercel.
 
+
+---
+
+##  Known Limitations
+
+### Drag-and-Drop Scope
+- Drag-and-drop functionality works only within the same page or route.
+- Attempting to drag elements across different views (e.g., from `/jobs` to `/candidates`) will not register a valid drop target.
+- This behavior is **not covered in the PDF tutorial**, so users should be aware of this constraint when designing workflows.
+
+###  Tag Creation
+- Users can **select from existing tags**, but **cannot create new tags** dynamically within the UI.
+- This is an intentional design choice to maintain controlled vocabularies.
+- If dynamic tag creation is required, consider extending the schema and implementing a tag management interface.
+ ### Authentication
+ -Currently Auth is not implemented. In future it will be implementd.
+
