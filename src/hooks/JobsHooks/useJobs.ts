@@ -5,10 +5,11 @@ import type { Job, JobType, JobStatus } from '@/data/JobsData/Jobs.types';
 
 const JOBS_PER_PAGE = 5;
 
-export const useJobs = (refreshTrigger: number = 0) => { 
+export const useJobs = (refreshTrigger: number = 0) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [allTags, setAllTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalJobsCount, setTotalJobsCount] = useState<number>(0);
@@ -18,7 +19,7 @@ export const useJobs = (refreshTrigger: number = 0) => {
     status: JobStatus | 'all';
     tags: string[];
     jobType: JobType[];
-    experience: string; 
+    experience: string;
   };
 
   const [filters, setFilters] = useState<JobFilters>({
@@ -28,7 +29,7 @@ export const useJobs = (refreshTrigger: number = 0) => {
     jobType: [],
     experience: 'all',
   });
-  
+
   const [sortBy, setSortBy] = useState('order');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
@@ -55,7 +56,7 @@ export const useJobs = (refreshTrigger: number = 0) => {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, filters, sortBy, sortOrder, refreshTrigger]); // Add refreshTrigger to dependencies
+  }, [currentPage, filters, sortBy, sortOrder, refreshTrigger]);
 
   useEffect(() => {
     fetchAndSetJobs();
@@ -65,31 +66,34 @@ export const useJobs = (refreshTrigger: number = 0) => {
     fetchAndSetJobs();
   }, [fetchAndSetJobs]);
 
- 
-const handleCreateJob = useCallback(async (formData: Omit<Job, 'id'>) => {
-  try {
-    await jobsApi.createJob(formData);
-    setCurrentPage(1);
-    setFilters({ search: '', status: 'all', tags: [], jobType: [], experience: 'all' });
-    refetchJobs();
-    setShowCreatePopup(true);
-  } catch (error: any) {
-    console.error("Failed to create job:", error);
-    alert((error as Error).message);
-  }
-}, [refetchJobs]);
+  const handleCreateJob = useCallback(async (formData: Omit<Job, 'id'>) => {
+    setIsSubmitting(true); // Start loading
+    try {
+      await jobsApi.createJob(formData);
+      setCurrentPage(1);
+      setFilters({ search: '', status: 'all', tags: [], jobType: [], experience: 'all' });
+      refetchJobs();
+      setShowCreatePopup(true);
+    } catch (error) {
+      console.error("Failed to create job:", error);
+      alert((error as Error).message);
+    } finally {
+      setIsSubmitting(false); // Stop loading
+    }
+  }, [refetchJobs]);
 
-const handleUpdateJob = useCallback(async (formData: Job) => {
-  try {
-    await jobsApi.updateJob(formData.id, formData);
-    refetchJobs(); 
-  } catch (error: any) {
-    console.error("Failed to update job:", error);
-   alert((error as Error).message);
-
-
-  }
-}, [refetchJobs]);
+  const handleUpdateJob = useCallback(async (formData: Job) => {
+    setIsSubmitting(true); // Start loading
+    try {
+      await jobsApi.updateJob(formData.id, formData);
+      refetchJobs();
+    } catch (error) {
+      console.error("Failed to update job:", error);
+      alert((error as Error).message);
+    } finally {
+      setIsSubmitting(false); // Stop loading
+    }
+  }, [refetchJobs]);
 
   const handleFilterChange = useCallback(<K extends keyof JobFilters>(
     filterName: K,
@@ -104,7 +108,7 @@ const handleUpdateJob = useCallback(async (formData: Job) => {
       setCurrentPage(newPage);
     }
   }, [totalPages, currentPage]);
-  
+
   const handleSortChange = useCallback((newSortBy: string) => {
     if(sortBy === newSortBy) {
       setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
@@ -114,11 +118,11 @@ const handleUpdateJob = useCallback(async (formData: Job) => {
     }
     setCurrentPage(1);
   }, [sortBy]);
-  
+
   const handleReorderJobs = useCallback(async (reorderedList: Job[]) => {
     const originalJobs = [...jobs];
     const updatedListWithOrder = reorderedList.map((job, index) => ({ ...job, order: index }));
-    setJobs(updatedListWithOrder);
+    setJobs(updatedListWithOrder); // UI updates instantly
     try {
       await jobsApi.saveJobOrder(updatedListWithOrder);
     } catch (error) {
@@ -134,11 +138,11 @@ const handleUpdateJob = useCallback(async (formData: Job) => {
   const handleArchive = useCallback(async (id: number, currentStatus: JobStatus) => {
     const originalJobs = [...jobs];
     const newStatus: JobStatus = currentStatus === 'active' ? 'archived' : 'active';
-    
-    const updatedJobs = jobs.map(job => 
+
+    const updatedJobs = jobs.map(job =>
       job.id === id ? { ...job, status: newStatus } : job
     );
-    setJobs(updatedJobs);
+    setJobs(updatedJobs); // UI updates instantly
 
     try {
       await jobsApi.patchJob(id, { status: newStatus });
@@ -152,6 +156,7 @@ const handleUpdateJob = useCallback(async (formData: Job) => {
   return {
     jobs,
     isLoading,
+    isSubmitting, 
     currentPage,
     totalPages,
     totalJobsCount,

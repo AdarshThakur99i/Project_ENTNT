@@ -20,6 +20,8 @@ const Layout: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [editingJob, setEditingJob] = React.useState<Job | null>(null);
   const [allTags, setAllTags] = React.useState<string[]>([]);
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+
   
   const [refreshTrigger, setRefreshTrigger] = React.useState(0);
   const [showSuccessPopup, setShowSuccessPopup] = React.useState(false);
@@ -62,18 +64,22 @@ const Layout: React.FC = () => {
   }, []);
 
   const handleFormSubmit = async (formData: Job | Omit<Job, 'id'>) => {
+    setIsSubmitting(true); 
     try {
       if ('id' in formData) {
         await updateJob(formData.id, formData as Job);
-        refreshJobs(); // Simple refresh call
       } else {
         await createJob(formData);
-        refreshJobs();
-        setShowSuccessPopup(true);
+       
       }
+      refreshJobs();
       handleCloseModal();
     } catch (error) {
       console.error("Failed to save job:", error);
+     
+      alert((error as Error).message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -135,6 +141,7 @@ const Layout: React.FC = () => {
         onSubmit={handleFormSubmit}
         initialData={editingJob}
         allTags={allTags}
+        isSubmitting={isSubmitting} 
       />
 
       {showSuccessPopup && (

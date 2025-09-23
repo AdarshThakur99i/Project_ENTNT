@@ -7,6 +7,7 @@ interface JobFormProps {
   onSubmit: (formData: Job | Omit<Job, 'id'>) => void;
   initialData: Job | null;
   allTags: string[];
+  isSubmitting: boolean;
 }
 
 const defaultFormData: JobFormData = {
@@ -21,7 +22,7 @@ const defaultFormData: JobFormData = {
   order: 0,
 };
 
-const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialData, allTags }) => {
+const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialData, allTags,isSubmitting }) => {
   const [formData, setFormData] = useState<JobFormData>(defaultFormData);
 
   useEffect(() => {
@@ -85,8 +86,7 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialDat
 
   if (!isOpen) return null;
   const isEditMode = !!initialData;
-
-  return (
+return (
     <div className="fixed inset-0 bg-black bg-opacity-60 z-40 flex justify-center items-center p-4 overflow-y-auto">
       <div 
         className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-6 rounded-lg shadow-xl w-full max-w-2xl z-50 my-8"
@@ -166,9 +166,19 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSubmit, initialDat
               ))}
             </div>
           </div>
+
           <div className="flex justify-end gap-4 border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
             <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white font-semibold rounded-md hover:bg-gray-300">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700">{isEditMode ? 'Save Changes' : 'Create Job'}</button>
+            
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed"
+            >
+              {isSubmitting
+                ? (isEditMode ? 'Saving...' : 'Creating...')
+                : (isEditMode ? 'Save Changes' : 'Create Job')}
+            </button>
           </div>
         </form>
       </div>
