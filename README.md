@@ -277,3 +277,5 @@ routes.tsx ::
 
 Artificial latency and artificial error has also been added in job apis to test rollback feature n all.
 
+hosted on vercel.
+
