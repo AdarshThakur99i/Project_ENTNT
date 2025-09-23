@@ -6,10 +6,9 @@ import type { Job } from '@/data/JobsData/Jobs.types';
 import React from 'react';
 
 type AppContextType = {
-  setJobListRefresher: React.Dispatch<React.SetStateAction<(() => void) | null>>;
+  refreshJobs: () => void;
   handleOpenEditModal: (job: Job) => void;
-  setCreateRefresher: React.Dispatch<React.SetStateAction<(() => Promise<void>) | null>>; // New: async for awaits if needed
-  setUpdateRefresher: React.Dispatch<React.SetStateAction<(() => Promise<void>) | null>>; // New
+  refreshTrigger: number; // Add this line
 };
 
 export function useAppOutletContext() {
@@ -22,10 +21,7 @@ const Layout: React.FC = () => {
   const [editingJob, setEditingJob] = React.useState<Job | null>(null);
   const [allTags, setAllTags] = React.useState<string[]>([]);
   
-  const [, setJobListRefresher] = React.useState<(() => void) | null>(null);
-  const [createRefresher, setCreateRefresher] = React.useState<(() => Promise<void>) | null>(null); // New
-  const [updateRefresher, setUpdateRefresher] = React.useState<(() => Promise<void>) | null>(null); // New
-
+  const [refreshTrigger, setRefreshTrigger] = React.useState(0);
   const [showSuccessPopup, setShowSuccessPopup] = React.useState(false);
 
   React.useEffect(() => {
@@ -61,15 +57,18 @@ const Layout: React.FC = () => {
     setEditingJob(null); 
   };
 
+  const refreshJobs = React.useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
   const handleFormSubmit = async (formData: Job | Omit<Job, 'id'>) => {
     try {
       if ('id' in formData) {
-        // We cast here to assure TypeScript that formData is a complete Job object
         await updateJob(formData.id, formData as Job);
-        if (updateRefresher) await updateRefresher(); // Use update refresher
+        refreshJobs(); // Simple refresh call
       } else {
         await createJob(formData);
-        if (createRefresher) await createRefresher(); // Use create refresher (with reset)
+        refreshJobs();
         setShowSuccessPopup(true);
       }
       handleCloseModal();
@@ -79,11 +78,10 @@ const Layout: React.FC = () => {
   };
 
   const contextValue = React.useMemo(() => ({
-    setJobListRefresher,
+    refreshJobs,
     handleOpenEditModal,
-    setCreateRefresher,
-    setUpdateRefresher
-  }), [setJobListRefresher, handleOpenEditModal, setCreateRefresher, setUpdateRefresher]);
+    refreshTrigger, // Add this line
+  }), [refreshJobs, handleOpenEditModal]); // Remove refreshTrigger from dependencies
 
   return (
     <div className="flex flex-col min-h-screen bg-neutral-100 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">

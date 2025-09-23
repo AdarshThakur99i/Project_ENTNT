@@ -5,7 +5,7 @@ import type { Job, JobType, JobStatus } from '@/data/JobsData/Jobs.types';
 
 const JOBS_PER_PAGE = 5;
 
-export const useJobs = () => {
+export const useJobs = (refreshTrigger: number = 0) => { // Add refreshTrigger parameter
   const [jobs, setJobs] = useState<Job[]>([]);
   const [allTags, setAllTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -55,7 +55,7 @@ export const useJobs = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, filters, sortBy, sortOrder]);
+  }, [currentPage, filters, sortBy, sortOrder, refreshTrigger]); // Add refreshTrigger to dependencies
 
   useEffect(() => {
     fetchAndSetJobs();
@@ -69,7 +69,7 @@ export const useJobs = () => {
     await jobsApi.createJob(formData);
     setCurrentPage(1);
     setFilters({ search: '', status: 'all', tags: [], jobType: [], experience: 'all' });
-    refetchJobs(); // Refetch after creation
+    refetchJobs();
     setShowCreatePopup(true);
   }, [refetchJobs]);
 
