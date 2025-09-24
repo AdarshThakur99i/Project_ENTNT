@@ -11,6 +11,7 @@ TalentFlow is a mini hiring platform built with React that enables HR teams to m
 
 IMPORTANT - To clear IndexedDB and reset app data, open DevTools → Application tab → IndexedDB → right-click the database → Delete. Then refresh the page to see changes.
 # FOR DEVELOPERS
+ ARCHITECTURE DIAGRAM(codeviz) : <img width="976" height="831" alt="image" src="https://github.com/user-attachments/assets/7f198fb1-d06e-48d7-b9f0-c72d98743006" />
 
 ## TECH STACK USED
 
@@ -139,6 +140,7 @@ Defines Job and JOb related interfaces for type safety.
 
 ### JobFilters.tsx
 1. It handles all the filtering logic. uses SetFilters function from useJobs hook to update any filter changes and refetches the entire list. it is used in joblist page.
+2.it is a controlled component(it doesn't have its own state..relies entirely on parent props ).
 
 ### JobDetails.tsx
 1. Shows Jobs details.
