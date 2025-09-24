@@ -3,7 +3,7 @@ import type { Assessment, AssessmentResponse } from "../../data/AssessmentFuncti
 export async function fetchAssessmentsForJob(jobId: number): Promise<Assessment[]> {
   const response = await fetch(`/api/jobs/${jobId}/assessments`);
   if (!response.ok) {
-    throw new Error('Failed to fetch assessments');
+    throw new Error('Failed to fetch assessments! try reloading the app');
   }
   return response.json();
 }
@@ -11,7 +11,7 @@ export async function fetchAssessmentsForJob(jobId: number): Promise<Assessment[
 export async function fetchAssessmentById(assessmentId: number): Promise<Assessment | null> {
     const response = await fetch(`/api/assessments/${assessmentId}`);
     if (!response.ok) {
-        throw new Error('Failed to fetch assessment');
+        throw new Error('Failed to fetch assessment try reloading the app');
     }
     if (response.status === 204) return null; // Handle "Not Found" case
     return response.json();
@@ -24,7 +24,7 @@ export async function createAssessment(jobId: number, assessmentData: Omit<Asses
     body: JSON.stringify(assessmentData),
   });
   if (!response.ok) {
-    throw new Error('Failed to create assessment');
+    throw new Error('Failed to create assessmen! try reloading the app');
   }
   return response.json();
 }
@@ -34,7 +34,7 @@ export async function deleteAssessment(assessmentId: number): Promise<void> {
     method: 'DELETE',
   });
   if (!response.ok) {
-    throw new Error('Failed to delete assessment');
+    throw new Error('Failed to delete assessment! try reloading the app!');
   }
 }
 
@@ -45,7 +45,7 @@ export async function saveAssessmentResponse(responseData: Omit<AssessmentRespon
     body: JSON.stringify(responseData),
   });
   if (!response.ok) {
-    throw new Error('Failed to save assessment response');
+    throw new Error('Failed to save assessment response! try relaoding');
   }
   return response.json();
 }
@@ -57,7 +57,7 @@ export async function updateAssessment(assessment: Assessment): Promise<Assessme
     body: JSON.stringify(assessment),
   });
   if (!response.ok) {
-    throw new Error('Failed to update assessment');
+    throw new Error('Failed to update assessment! try reloading');
   }
   return response.json();
 }

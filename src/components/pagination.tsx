@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
@@ -14,7 +13,6 @@ const Pagination: React.FC<PaginationProps> = ({
   onPageChange,
 }) => {
   const [goToPage, setGoToPage] = useState('');
-
   const handleGoToPage = (e: React.FormEvent) => {
     e.preventDefault();
     const pageNumber = parseInt(goToPage);
@@ -42,7 +40,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
    <div className="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4">
-  {/* Previous Button */}
+ 
   <button
     onClick={() => onPageChange(currentPage - 1)}
     disabled={currentPage === 1 || isLoading}
@@ -51,7 +49,6 @@ const Pagination: React.FC<PaginationProps> = ({
     ← Previous
   </button>
 
-  {/* Page Info + Go To Form */}
   <div className="flex flex-col sm:flex-row items-center gap-4">
     <span className="text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
       Page {currentPage} of {totalPages}

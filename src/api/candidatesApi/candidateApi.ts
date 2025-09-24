@@ -4,7 +4,7 @@ import {db} from '../../data/database/db'
 export async function fetchCandidatesForJob(jobId: number, stageFilter: string | 'all'): Promise<Candidate[]> {
   const response = await fetch(`/api/jobs/${jobId}/candidates?stage=${stageFilter}`);
   if (!response.ok) {
-    throw new Error('Failed to fetch candidates for job');
+    throw new Error('Failed to fetch candidates for job! try relaoding the app!');
   }
   return response.json();
 }
@@ -23,7 +23,7 @@ export async function fetchCandidates(params: { page: number; pageSize: number }
 export async function getCandidateById(candidateId: number): Promise<Candidate | null> {
   const response = await fetch(`/api/candidates/${candidateId}`);
   if (!response.ok) {
-    throw new Error('Failed to fetch candidate');
+    throw new Error('Failed to fetch candidate! try relaoding the app!');
   }
 
   if (response.status === 204) return null;
@@ -40,7 +40,7 @@ export async function updateCandidate(updatedCandidate: Candidate): Promise<Cand
     body: JSON.stringify(updatedCandidate),
   });
   if (!response.ok) {
-    throw new Error('Failed to update candidate');
+    throw new Error('Failed to update candidate! try relaoding the app');
   }
   return response.json();
 }
@@ -55,7 +55,7 @@ export async function addNoteToCandidate(candidateId: number, noteText: string):
         body: JSON.stringify({ noteText }),
     });
     if (!response.ok) {
-        throw new Error('Failed to add note');
+        throw new Error('Failed to add note try reloading the app');
     }
     return response.json();
 }
@@ -68,7 +68,7 @@ export async function deleteNoteFromCandidate(candidateId: number, noteId: numbe
     method: 'DELETE',
   });
   if (!response.ok) {
-    throw new Error('Failed to delete note');
+    throw new Error('Failed to delete note! try relaoding the app');
   }
   return response.json();
 }

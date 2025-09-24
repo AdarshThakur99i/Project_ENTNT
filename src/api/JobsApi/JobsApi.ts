@@ -53,21 +53,21 @@ export async function fetchJobs(params: FetchJobsParams): Promise<{ data: Job[];
   if (params.sortBy) queryParams.append('sortBy', params.sortBy);
   if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
   const response = await fetch(`/api/jobs?${queryParams.toString()}`);
-  if (!response.ok) throw new Error('Failed to fetch jobs');
+  if (!response.ok) throw new Error('Failed to fetch jobs! Try reloading the app');
   return response.json();
 }
 
 export async function fetchTags(): Promise<string[]> {
   
   const response = await fetch('/api/tags');
-  if (!response.ok) throw new Error('Failed to fetch tags');
+  if (!response.ok) throw new Error('Failed to fetch tags! Try reloading the app');
   return response.json();
 }
 
 export async function fetchJobById(jobId: number): Promise<Job> {
   
   const response = await fetch(`/api/jobs/${jobId}`);
-  if (!response.ok) throw new Error(`Failed to fetch job with ID ${jobId}`);
+  if (!response.ok) throw new Error(`Failed to fetch job with ID ${jobId} ! try reloading` );
   return response.json();
 }
 
@@ -78,7 +78,7 @@ export async function createJob(jobData: Omit<Job, 'id'>): Promise<Job> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(jobData),
   });
-  if (!response.ok) throw new Error('Failed to create job');
+  if (!response.ok) throw new Error('Failed to create job! try reloading the app');
   return response.json();
 }
 
@@ -89,7 +89,7 @@ export async function updateJob(jobId: number, jobData: Job): Promise<Job> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(jobData),
   });
-  if (!response.ok) throw new Error('Failed to update job');
+  if (!response.ok) throw new Error('Failed to update job! try reloading the app');
   return response.json();
 }
 
@@ -105,13 +105,14 @@ export async function patchJob(jobId: number, updates: Partial<Job>): Promise<Jo
 }
 
 export async function saveJobOrder(reorderedJobs: Job[]): Promise<void> {
+  
   await simulateNetwork({ errorRate: 0.05 }); 
   const response = await fetch('/api/jobs/reorder', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ reorderedJobs }),
   });
-  if (!response.ok) throw new Error('Failed to save job order');
+  if (!response.ok) throw new Error('Failed to save job order! try reloading the app');
 }
 
 export async function deleteJob(jobId: number): Promise<void> {
@@ -119,5 +120,5 @@ export async function deleteJob(jobId: number): Promise<void> {
   const response = await fetch(`/api/jobs/${jobId}`, {
     method: 'DELETE',
   });
-  if (!response.ok) throw new Error('Failed to delete job');
+  if (!response.ok) throw new Error('Failed to delete job! try reloading the app ');
 }
