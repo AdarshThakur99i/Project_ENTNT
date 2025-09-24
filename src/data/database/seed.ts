@@ -1,6 +1,6 @@
 import { db } from './db';
 import { generateSeedCandidates } from '../../data/CandidatesFunctions/mockCandidates';
-import type { Assessment, Question } from '../../data/AssessmentFunctions/assessment';
+import type { Assessment } from '../../data/AssessmentFunctions/assessment';
 import type { Job, JobType, Salary, Experience, JobStatus } from '@/data/JobsData/Jobs.types';
 
 const TAG_POOL = ['React', 'TypeScript', 'Node.js', 'Remote', 'GraphQL', 'CSS', 'Senior', 'JavaScript', 'Mid-Level', 'Contract', 'Vue', 'Angular', 'AWS'];
@@ -79,7 +79,7 @@ function generateSeedAssessments(jobs: Omit<Job, 'id'>[]): Omit<Assessment, 'id'
   });
 
   // Loop through each job to create assessments for it
-  jobs.forEach((job, index) => {
+  jobs.forEach((_job, index) => {
     const jobId = index + 1; // Assuming job IDs will be 1, 2, 3...
 
     // Create and add 3 different general assessments for the current job
